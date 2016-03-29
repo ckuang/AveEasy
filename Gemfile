@@ -45,7 +45,7 @@ group :development do
   gem 'spring'
 end
 
-group: production do
+group :production do
   gem 'newrelic_rpm'
   gem 'rails_12factor' # error feedback
 end
