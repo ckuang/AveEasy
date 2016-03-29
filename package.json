@@ -19,5 +19,12 @@
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "webpack": "^1.12.14"
+  },
+  "engines": {
+    "node": "5.1.0",
+    "npm": "3.3.12"
+  },
+  "scripts": {
+    "postinstall": "./node_modules/.bin/webpack"
   }
 }
