@@ -1,7 +1,12 @@
+var ApiActions = require('../actions/api_action');
+
 var ApiUtil = {
   fetchListings: function () {
-    $.get('api/listings', function(listings){
-      console.log(listings);
+    $.ajax({
+      url: "api/listings",
+      success: function (listings) {
+        ApiActions.receiveAll(listings);
+      }
     });
   }
 };
