@@ -50,7 +50,7 @@
 	var Router = ReactRouter.Router;
 	var Route = ReactRouter.Route;
 	var IndexRoute = ReactRouter.IndexRoute;
-	var Listings = __webpack_require__(216);
+	var Listings = __webpack_require__(241);
 	
 	var ApiUtil = __webpack_require__(238);
 	window.ApiUtil = ApiUtil;
@@ -63,14 +63,30 @@
 	      'div',
 	      null,
 	      React.createElement(
-	        'header',
-	        null,
+	        'nav',
+	        { className: 'group' },
 	        React.createElement(
-	          'h1',
-	          null,
-	          'Ave Easy'
+	          'p',
+	          { className: 'nyc' },
+	          'New York City'
+	        ),
+	        React.createElement(
+	          'p',
+	          { className: 'register' },
+	          'REGISTER (IT\'S FREE)'
+	        ),
+	        React.createElement(
+	          'p',
+	          { className: 'signin' },
+	          'Sign In'
 	        )
 	      ),
+	      React.createElement(
+	        'h1',
+	        { className: 'logo' },
+	        'AveEasy'
+	      ),
+	      React.createElement('br', null),
 	      this.props.children
 	    );
 	  }
@@ -83,7 +99,11 @@
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
-	  ReactDOM.render(React.createElement(Listings, null), document.getElementById('content'));
+	  ReactDOM.render(React.createElement(
+	    Router,
+	    null,
+	    routes
+	  ), document.getElementById('content'));
 	});
 
 /***/ },
@@ -24755,60 +24775,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 216 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var ListingStore = __webpack_require__(217);
-	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(238);
-	
-	var Listings = React.createClass({
-	  displayName: 'Listings',
-	
-	  getInitialState: function () {
-	    return { listings: [] };
-	  },
-	  _listingChanged: function () {
-	    this.setState({ listings: ListingStore.all() });
-	  },
-	  componentDidMount: function () {
-	    this.listingListener = ListingStore.addListener(this._listingChanged);
-	    ApiUtil.fetchListings();
-	  },
-	  componentWillUnmount: function () {
-	    this.listingListener.remove();
-	  },
-	
-	  render: function () {
-	    var output = [];
-	    for (var x = 0; x < this.state.listings.length; x++) {
-	      var listing = this.state.listings[x];
-	      var values = [];
-	      for (var key in listing) {
-	        if (listing.hasOwnProperty(key)) {
-	          var value = listing[key];
-	          values.push(value);
-	        }
-	      }
-	      output.push(React.createElement(
-	        'li',
-	        null,
-	        values
-	      ));
-	    }
-	
-	    return React.createElement(
-	      'ul',
-	      null,
-	      output
-	    );
-	  }
-	});
-	
-	module.exports = Listings;
-
-/***/ },
+/* 216 */,
 /* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -31526,6 +31493,15 @@
 	        ApiActions.receiveAll(listings);
 	      }
 	    });
+	  },
+	  fetchAddressCoord: function (address) {
+	    var parse_add = address.split(" ").join("+");
+	    $.ajax({
+	      url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + parse_add + "&key=AIzaSyBn5UpAKkZeSm6HA0EREHCz8IVFE-r0L2Q",
+	      success: function (address_location) {
+	        var address_coord = address_location.results[0].geometry.location;
+	      }
+	    });
 	  }
 	};
 	
@@ -31544,10 +31520,219 @@
 	      actionType: ListingConstants.LISTINGS_RECEIVED,
 	      listings: listings
 	    });
+	  },
+	  updateMarker: function (marker, pos) {
+	    AppDispatcher.dispatch({
+	      actionType: "updatemarker",
+	      marker: marker,
+	      pos: pos
+	    });
 	  }
 	};
 	
 	module.exports = ApiActions;
+
+/***/ },
+/* 240 */,
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ListingStore = __webpack_require__(217);
+	var ReactRouter = __webpack_require__(159);
+	var ApiUtil = __webpack_require__(238);
+	var Listing = __webpack_require__(242);
+	var GoogleMap = __webpack_require__(243);
+	
+	var Listings = React.createClass({
+	  displayName: 'Listings',
+	
+	  getInitialState: function () {
+	    return { listings: [] };
+	  },
+	  _listingChanged: function () {
+	    this.setState({ listings: ListingStore.all() });
+	  },
+	  componentDidMount: function () {
+	    this.listingListener = ListingStore.addListener(this._listingChanged);
+	    ApiUtil.fetchListings();
+	  },
+	  componentWillUnmount: function () {
+	    this.listingListener.remove();
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'ul',
+	        { className: 'idx_listings' },
+	        React.createElement(GoogleMap, null),
+	        this.state.listings.map(function (listing) {
+	          return React.createElement(Listing, { key: listing.id, listing: listing });
+	        })
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Listings;
+
+/***/ },
+/* 242 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var MarkerStore = __webpack_require__(244);
+	var ReactRouter = __webpack_require__(159);
+	var ApiUtil = __webpack_require__(238);
+	var ApiActions = __webpack_require__(239);
+	
+	var Listing = React.createClass({
+	  displayName: 'Listing',
+	
+	  getInitialState: function () {
+	    return {};
+	  },
+	
+	  place_marker: function () {
+	    var pos = {};
+	    pos.lat = this.props.listing.lat;
+	    pos.lng = this.props.listing.lng;
+	    var marker = new google.maps.Marker({
+	      position: pos
+	    });
+	    ApiActions.updateMarker(marker, pos);
+	  },
+	  render: function () {
+	
+	    return React.createElement(
+	      'li',
+	      { onMouseOver: this.place_marker, className: 'idx_listing group' },
+	      React.createElement(
+	        'p',
+	        { className: 'idx_address detail' },
+	        ' ',
+	        this.props.listing.address
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'idx_price detail' },
+	        ' $',
+	        this.props.listing.price,
+	        ' FOR SALE'
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'idx_beds detail' },
+	        ' ',
+	        this.props.listing.beds,
+	        ' beds'
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'idx_baths detail' },
+	        ' ',
+	        this.props.listing.baths,
+	        ' bath'
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'idx_category detail' },
+	        ' ',
+	        this.props.listing.category
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'idx_company detail' },
+	        ' Listed by ',
+	        this.props.listing.company
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Listing;
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var MarkerStore = __webpack_require__(244);
+	var ApiUtil = __webpack_require__(238);
+	
+	var Map = React.createClass({
+		displayName: 'Map',
+	
+		getInitialState: function () {
+			return { marker: false };
+		},
+	
+		_onChange: function () {
+			if (this.state.marker) {
+				this.state.marker.setMap(null);
+			}
+			this.setState({ marker: MarkerStore.marker() });
+		},
+	
+		componentDidMount: function () {
+			this.markerListener = MarkerStore.addListener(this._onChange);
+	
+			var mapDOMNode = this.refs.map;
+			var mapOptions = {
+				center: { lat: 40.72493, lng: -73.996704 },
+				zoom: 13
+			};
+			this.map = new google.maps.Map(mapDOMNode, mapOptions);
+		},
+	
+		render: function () {
+	
+			if (this.state.marker) {
+				this.state.marker.setMap(this.map);
+			}
+			if (this.map && this.state.marker) {
+				var position = new google.maps.LatLng(MarkerStore.pos());
+				this.map.panTo(position);
+			}
+	
+			return React.createElement('div', { className: 'map', ref: 'map' });
+		}
+	});
+	
+	module.exports = Map;
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(218).Store;
+	var _marker = {};
+	var _pos = {};
+	var AppDispatcher = __webpack_require__(235);
+	var MarkerStore = new Store(AppDispatcher);
+	
+	MarkerStore.marker = function () {
+	  return _marker;
+	};
+	
+	MarkerStore.pos = function () {
+	  return _pos;
+	};
+	
+	MarkerStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "updatemarker":
+	      _marker = payload.marker;
+	      _pos = payload.pos;
+	      MarkerStore.__emitChange();
+	      break;
+	  }
+	};
+	
+	module.exports = MarkerStore;
 
 /***/ }
 /******/ ]);

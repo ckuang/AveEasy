@@ -13,3 +13,131 @@
  *= require_tree .
  *= require_self
  */
+
+ html, body, header, nav, h1, a, ul, li,
+ strong, main, section, img, div, h2, p,
+ form, fieldset, label, input, textarea,
+ button, article, footer, small {
+   margin: 0;
+   padding: 0;
+   border: 0;
+   outline: 0;
+   font: inherit;
+   box-sizing: inherit;
+   text-align: inherit;
+   text-decoration: inherit;
+   vertical-align: inherit;
+   color: inherit;
+   background: transparent;
+ }
+
+ul {
+  list-style: none;
+}
+
+.group:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+
+nav {
+  width: 980px;
+  box-sizing: border-box;
+  padding: 5px 0;
+  margin: auto;
+  border-bottom: 1px solid lightgray;
+  color: #0080c6;
+  font-family: Source Sans Pro;
+}
+
+.nyc {
+  display: block;
+  float: left;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.register {
+  display: block;
+  padding-left: 10px;
+  float: right;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.signin {
+  float: right;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.logo {
+  padding: 10px 0;
+  color: #0080c6;
+  display: block;
+  font-size: 30px;
+  font-weight: bold;
+  font-family: Source Sans Pro;
+  width: 980px;
+  margin: auto;
+  border-bottom: 5px solid black;
+}
+
+.idx_listing {
+  box-sizing: border-box;
+  width: 639px;
+  height: 180px;
+  padding: 14px 0;
+  border-top: 1px solid black;
+  font-family: Source Sans Pro;
+}
+
+.idx_listings {
+  width: 980px;
+  margin: auto;
+  font-family: Source Sans Pro;
+}
+
+.idx_address {
+  font-size: 18px;
+  line-height: 22.4px;
+  color: #0080c6;
+}
+.idx_price {
+  font-size: 16px;
+  line-height: 22.4px;
+  margin-top: 3px;
+}
+.idx_beds {
+  display: block;
+  font-size: 14px;
+  padding-right: 10px;
+}
+.idx_baths {
+  display: block;
+  font-size: 14px;
+  float: left;
+}
+.idx_category {
+
+}
+.idx_company {
+
+}
+
+.detail {
+  box-sizing: border-box;
+  width: 455px;
+  float: right;
+  border-top: 1px solid lightgray;
+  margin: 3px 0;
+}
+
+.map {
+  display: block;
+  width: 310px;
+  height: 310px;
+  float: right;
+}

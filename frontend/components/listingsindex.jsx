@@ -2,6 +2,8 @@ var React = require('react');
 var ListingStore = require('../stores/listing');
 var ReactRouter = require('react-router');
 var ApiUtil = require('../util/api_util');
+var Listing = require('./listingsindexitem');
+var GoogleMap = require('./map');
 
 var Listings = React.createClass({
   getInitialState: function () {
@@ -19,25 +21,17 @@ var Listings = React.createClass({
   },
 
   render: function () {
-    var output = [];
-    for (var x = 0; x < this.state.listings.length; x++ ) {
-      var listing = this.state.listings[x];
-      var values = [];
-      for(var key in listing) {
-          if(listing.hasOwnProperty(key)) {
-            var value = listing[key];
-            values.push(value);
-          }
-      }
-      output.push(<li>{values}</li>);
-    }
-
-
-    return (
-      <ul>
-        {output}
+    return(
+      <div>
+      <ul className="idx_listings">
+        <GoogleMap />
+        {this.state.listings.map(function (listing) {
+          return <Listing key={listing.id} listing={listing} />;
+        })}
       </ul>
+      </div>
     );
+
   }
 });
 

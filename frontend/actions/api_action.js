@@ -7,6 +7,13 @@ var ApiActions = {
       actionType: ListingConstants.LISTINGS_RECEIVED,
       listings: listings
     });
+  },
+  updateMarker: function(marker, pos) {
+    AppDispatcher.dispatch({
+      actionType: "updatemarker",
+      marker: marker,
+      pos: pos
+    });
   }
 };
 
