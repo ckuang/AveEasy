@@ -29,6 +29,7 @@ var Listings = React.createClass({
           return <Listing key={listing.id} listing={listing} />;
         })}
       </ul>
+        {this.props.children}
       </div>
     );
 

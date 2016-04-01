@@ -9,19 +9,14 @@
 <body>
 
 
+
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz5S3QauGBkMkHXhdJJMZ-eSxlb5Eyf6A">
   </script>
 
 <%= yield %>
-<% if signed_in? %>
-  <%= current_user.username %>
-  <%= button_to "Sign Out", session_url, :method => :delete %>
-<% else %>
-  <%= link_to "Sign In", new_session_url %>
-  <%= link_to "REGISTER (IT'S FREE)", new_user_url %>
-<% end %>
-<%= flash[:errors].join("<br>").html_safe if flash[:errors] %>
+
+
 
 </body>
 </html>

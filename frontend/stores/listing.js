@@ -12,6 +12,10 @@ ListingStore.all = function () {
   return _listings.slice(0);
 };
 
+ListingStore.find = function (id) {
+  return _listings[id];
+};
+
 ListingStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
     case ListingConstants.LISTINGS_RECEIVED:

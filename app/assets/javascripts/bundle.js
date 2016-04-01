@@ -50,7 +50,11 @@
 	var Router = ReactRouter.Router;
 	var Route = ReactRouter.Route;
 	var IndexRoute = ReactRouter.IndexRoute;
-	var Listings = __webpack_require__(241);
+	var hashHistory = ReactRouter.hashHistory;
+	var Listings = __webpack_require__(216);
+	var HeaderNav = __webpack_require__(246);
+	var ListingShow = __webpack_require__(243);
+	var LoginForm = __webpack_require__(244);
 	
 	var ApiUtil = __webpack_require__(238);
 	window.ApiUtil = ApiUtil;
@@ -58,10 +62,14 @@
 	var App = React.createClass({
 	  displayName: 'App',
 	
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
 	  render: function () {
 	    return React.createElement(
 	      'div',
 	      null,
+	      React.createElement(LoginForm, null),
 	      React.createElement(
 	        'nav',
 	        { className: 'group' },
@@ -70,16 +78,7 @@
 	          { className: 'nyc' },
 	          'New York City'
 	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'register' },
-	          'REGISTER (IT\'S FREE)'
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'signin' },
-	          'Sign In'
-	        )
+	        React.createElement(HeaderNav, null)
 	      ),
 	      React.createElement(
 	        'h1',
@@ -95,13 +94,22 @@
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
-	  React.createElement(IndexRoute, { component: Listings })
+	  React.createElement(Route, { path: '/listings', component: Listings }),
+	  React.createElement(Route, { path: 'listing/:id', component: ListingShow })
 	);
+	
+	window.showModal = function () {
+	  $("#modal").addClass("is-active");
+	};
+	
+	window.hideModal = function () {
+	  $("#modal").removeClass("is-active");
+	};
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  ReactDOM.render(React.createElement(
 	    Router,
-	    null,
+	    { history: hashHistory },
 	    routes
 	  ), document.getElementById('content'));
 	});
@@ -24775,7 +24783,53 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 216 */,
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ListingStore = __webpack_require__(217);
+	var ReactRouter = __webpack_require__(159);
+	var ApiUtil = __webpack_require__(238);
+	var Listing = __webpack_require__(240);
+	var GoogleMap = __webpack_require__(242);
+	
+	var Listings = React.createClass({
+	  displayName: 'Listings',
+	
+	  getInitialState: function () {
+	    return { listings: [] };
+	  },
+	  _listingChanged: function () {
+	    this.setState({ listings: ListingStore.all() });
+	  },
+	  componentDidMount: function () {
+	    this.listingListener = ListingStore.addListener(this._listingChanged);
+	    ApiUtil.fetchListings();
+	  },
+	  componentWillUnmount: function () {
+	    this.listingListener.remove();
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'ul',
+	        { className: 'idx_listings' },
+	        React.createElement(GoogleMap, null),
+	        this.state.listings.map(function (listing) {
+	          return React.createElement(Listing, { key: listing.id, listing: listing });
+	        })
+	      ),
+	      this.props.children
+	    );
+	  }
+	});
+	
+	module.exports = Listings;
+
+/***/ },
 /* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -24791,6 +24845,10 @@
 	
 	ListingStore.all = function () {
 	  return _listings.slice(0);
+	};
+	
+	ListingStore.find = function (id) {
+	  return _listings[id];
 	};
 	
 	ListingStore.__onDispatch = function (payload) {
@@ -31502,6 +31560,46 @@
 	        var address_coord = address_location.results[0].geometry.location;
 	      }
 	    });
+	  },
+	
+	  login: function (credentials, callback) {
+	
+	    $.ajax({
+	      type: "POST",
+	      url: "/api/session",
+	      dataType: "json",
+	      data: { user: credentials },
+	      success: function (currentUser) {
+	        debugger;
+	        SessionActions.currentUserReceived(currentUser);
+	        callback && callback();
+	      }
+	    });
+	  },
+	
+	  logout: function () {
+	    $.ajax({
+	      type: "DELETE",
+	      url: "/api/session",
+	      dataType: "json",
+	      success: function () {
+	        SessionActions.logout();
+	      }
+	    });
+	  },
+	
+	  fetchCurrentUser: function (completion) {
+	    $.ajax({
+	      type: "GET",
+	      url: "/api/session",
+	      dataType: "json",
+	      success: function (currentUser) {
+	        SessionActions.currentUserReceived(currentUser);
+	      },
+	      complete: function () {
+	        completion && completion();
+	      }
+	    });
 	  }
 	};
 	
@@ -31533,64 +31631,22 @@
 	module.exports = ApiActions;
 
 /***/ },
-/* 240 */,
-/* 241 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ListingStore = __webpack_require__(217);
-	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(238);
-	var Listing = __webpack_require__(242);
-	var GoogleMap = __webpack_require__(243);
-	
-	var Listings = React.createClass({
-	  displayName: 'Listings',
-	
-	  getInitialState: function () {
-	    return { listings: [] };
-	  },
-	  _listingChanged: function () {
-	    this.setState({ listings: ListingStore.all() });
-	  },
-	  componentDidMount: function () {
-	    this.listingListener = ListingStore.addListener(this._listingChanged);
-	    ApiUtil.fetchListings();
-	  },
-	  componentWillUnmount: function () {
-	    this.listingListener.remove();
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'ul',
-	        { className: 'idx_listings' },
-	        React.createElement(GoogleMap, null),
-	        this.state.listings.map(function (listing) {
-	          return React.createElement(Listing, { key: listing.id, listing: listing });
-	        })
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = Listings;
-
-/***/ },
-/* 242 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(244);
+	var MarkerStore = __webpack_require__(241);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(238);
 	var ApiActions = __webpack_require__(239);
+	var hashHistory = ReactRouter.hashHistory;
 	
 	var Listing = React.createClass({
 	  displayName: 'Listing',
+	
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
 	
 	  getInitialState: function () {
 	    return {};
@@ -31605,11 +31661,16 @@
 	    });
 	    ApiActions.updateMarker(marker, pos);
 	  },
-	  render: function () {
 	
+	  showListing: function () {
+	
+	    this.context.router.push('/listing/' + this.props.listing.id);
+	  },
+	
+	  render: function () {
 	    return React.createElement(
 	      'li',
-	      { onMouseOver: this.place_marker, className: 'idx_listing group' },
+	      { onClick: this.showListing, onMouseEnter: this.place_marker, className: 'idx_listing group' },
 	      React.createElement(
 	        'p',
 	        { className: 'idx_address detail' },
@@ -31656,11 +31717,41 @@
 	module.exports = Listing;
 
 /***/ },
-/* 243 */
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(218).Store;
+	var _marker = {};
+	var _pos = {};
+	var AppDispatcher = __webpack_require__(235);
+	var MarkerStore = new Store(AppDispatcher);
+	
+	MarkerStore.marker = function () {
+	  return _marker;
+	};
+	
+	MarkerStore.pos = function () {
+	  return _pos;
+	};
+	
+	MarkerStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "updatemarker":
+	      _marker = payload.marker;
+	      _pos = payload.pos;
+	      MarkerStore.__emitChange();
+	      break;
+	  }
+	};
+	
+	module.exports = MarkerStore;
+
+/***/ },
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(244);
+	var MarkerStore = __webpack_require__(241);
 	var ApiUtil = __webpack_require__(238);
 	
 	var Map = React.createClass({
@@ -31705,34 +31796,248 @@
 	module.exports = Map;
 
 /***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ListingStore = __webpack_require__(217);
+	var ReactRouter = __webpack_require__(159);
+	var ApiUtil = __webpack_require__(238);
+	var Listing = __webpack_require__(240);
+	var GoogleMap = __webpack_require__(242);
+	var ListingStore = __webpack_require__(217);
+	var ListingShow = React.createClass({
+	  displayName: 'ListingShow',
+	
+	
+	  getStateFromStore: function () {
+	    return { listing: ListingStore.find(parseInt(this.props.params.id) - 1) };
+	  },
+	
+	  _onChange: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'ul',
+	      null,
+	      React.createElement(
+	        'li',
+	        { className: 'show_address detail' },
+	        ' ',
+	        this.state.listing.address
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'show_price detail' },
+	        ' $',
+	        this.state.listing.price,
+	        ' FOR SALE'
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'show_beds detail' },
+	        ' ',
+	        this.state.listing.beds,
+	        ' beds'
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'show_baths detail' },
+	        ' ',
+	        this.state.listing.baths,
+	        ' bath'
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'show_category detail' },
+	        ' ',
+	        this.state.listing.category
+	      ),
+	      React.createElement(
+	        'li',
+	        { className: 'show_company detail' },
+	        ' Listed by ',
+	        this.state.listing.company
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = ListingShow;
+
+/***/ },
 /* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var React = __webpack_require__(1);
+	var ApiUtil = __webpack_require__(238);
+	var ApiActions = __webpack_require__(239);
+	
+	var LoginForm = React.createClass({
+	  displayName: 'LoginForm',
+	
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	
+	  getInitialState: function () {
+	    return {
+	      name: "",
+	      password: "",
+	      signin_register: "Register"
+	    };
+	  },
+	  updateRegister: function () {
+	    this.setState({ signin_register: "Register" });
+	  },
+	  updateSignIn: function () {
+	    this.setState({ signin_register: "Sign In" });
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'section',
+	      { id: 'modal', className: 'modal ' },
+	      React.createElement(
+	        'article',
+	        { className: 'modal-content' },
+	        React.createElement(
+	          'span',
+	          { className: 'modal-close', onClick: window.hideModal },
+	          'CANCEL'
+	        ),
+	        React.createElement(
+	          'h1',
+	          { id: 'signin' },
+	          ' SIGN IN '
+	        ),
+	        React.createElement(
+	          'p',
+	          null,
+	          ' Register for free to access all AveEasy has to offer including premium data and advanced features. '
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'group' },
+	          React.createElement(
+	            'li',
+	            { onClick: this.updateRegister, className: 'signintab' },
+	            'Register'
+	          ),
+	          React.createElement(
+	            'li',
+	            { onClick: this.updateSignIn, className: 'signintab' },
+	            'Sign In'
+	          )
+	        ),
+	        React.createElement(
+	          'form',
+	          { onSubmit: this.handleSubmit },
+	          React.createElement('input', { onChange: this.updateName, type: 'text', placeholder: 'Email Address', value: this.state.name }),
+	          React.createElement('input', { onChange: this.updatePassword, type: 'password', placeholder: 'Password (At Least 5 Characters)', value: this.state.password }),
+	          React.createElement(
+	            'button',
+	            null,
+	            this.state.signin_register
+	          )
+	        )
+	      ),
+	      React.createElement('div', { onClick: window.hideModal, className: 'modal-screen js-hide-modal' })
+	    );
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    var user = { username: this.state.name, password: this.state.password };
+	    ApiUtil.login(user, function () {});
+	  },
+	
+	  updateName: function (e) {
+	    this.setState({ name: e.currentTarget.value });
+	  },
+	
+	  updatePassword: function (e) {
+	    this.setState({ password: e.currentTarget.value });
+	  }
+	
+	});
+	
+	module.exports = LoginForm;
+
+/***/ },
+/* 245 */,
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var SessionStore = __webpack_require__(247);
+	
+	var HeaderNav = React.createClass({
+	  displayName: 'HeaderNav',
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'p',
+	        { className: 'register', onClick: window.showModal },
+	        'REGISTER (IT\'S FREE)'
+	      ),
+	      React.createElement(
+	        'p',
+	        { className: 'signin', onClick: window.showModal },
+	        'Sign In'
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = HeaderNav;
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var Store = __webpack_require__(218).Store;
-	var _marker = {};
-	var _pos = {};
 	var AppDispatcher = __webpack_require__(235);
-	var MarkerStore = new Store(AppDispatcher);
+	var SessionStore = new Store(AppDispatcher);
 	
-	MarkerStore.marker = function () {
-	  return _marker;
+	var _currentUser;
+	var _currentUserHasBeenFetched = false;
+	
+	SessionStore.currentUser = function () {
+	  return _currentUser;
 	};
 	
-	MarkerStore.pos = function () {
-	  return _pos;
+	SessionStore.isLoggedIn = function () {
+	  return !!_currentUser;
 	};
 	
-	MarkerStore.__onDispatch = function (payload) {
+	SessionStore.currentUserHasBeenFetched = function () {
+	  return _currentUserHasBeenFetched;
+	};
+	
+	SessionStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case "updatemarker":
-	      _marker = payload.marker;
-	      _pos = payload.pos;
-	      MarkerStore.__emitChange();
+	    case SessionConstants.CURRENT_USER_RECEIVED:
+	      _currentUser = payload.currentUser;
+	      _currentUserHasBeenFetched = true;
+	      SessionStore.__emitChange();
+	      break;
+	    case SessionConstants.LOGOUT:
+	      _currentUser = null;
+	      SessionStore.__emitChange();
 	      break;
 	  }
 	};
 	
-	module.exports = MarkerStore;
+	module.exports = SessionStore;
 
 /***/ }
 /******/ ]);

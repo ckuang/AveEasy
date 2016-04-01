@@ -3,8 +3,13 @@ var MarkerStore = require('../stores/marker');
 var ReactRouter = require('react-router');
 var ApiUtil = require('../util/api_util');
 var ApiActions = require('../actions/api_action');
+var hashHistory = ReactRouter.hashHistory;
 
 var Listing = React.createClass({
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
+
   getInitialState: function () {
     return {};
   },
@@ -18,10 +23,15 @@ var Listing = React.createClass({
     });
     ApiActions.updateMarker(marker, pos);
   },
-  render: function () {
 
+  showListing: function () {
+
+    this.context.router.push('/listing/' + this.props.listing.id);
+  },
+
+  render: function () {
     return(
-    <li onMouseOver={this.place_marker} className="idx_listing group">
+    <li onClick={this.showListing} onMouseEnter={this.place_marker} className="idx_listing group">
       <p className="idx_address detail"> {this.props.listing.address}</p>
       <p className="idx_price detail"> ${this.props.listing.price} FOR SALE</p>
       <p className="idx_beds detail"> {this.props.listing.beds} beds</p>
