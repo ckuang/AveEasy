@@ -14,7 +14,13 @@ var ApiActions = {
       marker: marker,
       pos: pos
     });
-  }
+  },
+	updateRegister: function (register) {
+		AppDispatcher.dispatch({
+			actionType: "updateregister",
+			register: register,
+		});
+	}
 };
 
 module.exports = ApiActions;

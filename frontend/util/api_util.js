@@ -1,4 +1,6 @@
 var ApiActions = require('../actions/api_action');
+var SessionActions = require('../actions/session_actions');
+var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 
 var ApiUtil = {
   fetchListings: function () {
@@ -19,19 +21,29 @@ var ApiUtil = {
       }
     });
   },
+	fetchNeigborhood: function (coord) {
+		var lat = coord.lat.toString();
+		var lng = coord.lng.toString();
+		var req = "http://streeteasy.com/nyc/api/areas/for_location?lon=" + lng + "&lat=" + lat + "&key=" + streeteasykey + "&format=json";
+		$.ajax({
+			url: req,
+			success: function (neighborhood) {
+				debugger
+				var address_coord = address_location.results[0].geometry.location;
+			}
+		});
+	},
 
-  login: function(credentials, callback) {
 
+  login: function(credentials) {
     $.ajax({
       type: "POST",
       url: "/api/session",
       dataType: "json",
       data: {user: credentials},
       success: function(currentUser) {
-        debugger
-        SessionActions.currentUserReceived(currentUser);
-        callback && callback();
-      }
+				SessionActions.currentUserReceived(currentUser);
+			}
     });
   },
 

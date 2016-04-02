@@ -15,8 +15,8 @@
  */
 
  html, body, header, nav, h1, a, ul, li,
- strong, main, section, img, div, h2, p,
- form, fieldset, label, textarea,
+ strong, main, section, img, div, h2, p, form, fieldset,
+ label, textarea, select, input, option,
  article, footer, small {
    margin: 0;
    padding: 0;
@@ -136,6 +136,7 @@ nav {
 }
 
 .map {
+	position: fixed;
   display: block;
   width: 310px;
   height: 310px;
@@ -194,4 +195,83 @@ nav {
   height: 40px;
   padding: 5px;
   border: 1px solid lightgray;
+}
+
+
+.search-field {
+	width: 980px;
+	margin: auto;
+}
+
+.search-header {
+	font-size: 30px;
+}
+
+.search {
+	width: 637px;
+}
+
+.search > label {
+	font-size: 14px;
+	display: block;
+}
+
+.label-location {
+
+}
+.label-type {
+
+}
+.label-price {}
+.label-bed {}
+.label-bath {}
+
+
+
+.search > input {
+	display: block;
+	box-sizing: border-box;
+	border: 1px solid lightgray;
+	width: 464.156px;
+	height: 38px;
+
+}
+
+.search > select {
+	display: block;
+	box-sizing: border-box;
+	outline: 1px solid lightgray;
+	-webkit-appearance: none;
+	appearance: none;
+	padding: 7px;
+}
+
+.type-select {
+	width: 156.063px;
+	height: 38px;
+
+}
+
+.cost-select {
+	width: 141.096px;
+	height: 40px;
+}
+
+.bed-select {
+	width: 149.25px;
+	height: 40px;
+}
+
+.bath-select {
+	width: 159.25px;
+	height: 40px;
+
+
+}
+
+.search > button {
+	width: 100px;
+	height: 42px;
+	background: rgb(75, 125, 197);
+	color: white;
 }

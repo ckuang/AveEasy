@@ -1,6 +1,7 @@
 var React = require('react');
 var ApiUtil = require('../util/api_util');
 var ApiActions = require('../actions/api_action');
+var RegisterStore = require('../stores/register');
 
 var LoginForm = React.createClass({
   contextTypes: {
@@ -11,22 +12,39 @@ var LoginForm = React.createClass({
     return {
       name: "",
       password: "",
-      signin_register: "Register"
+      signin_register: ""
     };
   },
+	resetState: function () {
+		this.setState({
+      name: "",
+      password: "",
+      signin_register: ""
+		});
+	},
+	setRegister: function () {
+		this.setState({signin_register: RegisterStore.register()});
+	},
+	componentDidMount: function () {
+		RegisterStore.addListener(this.setRegister);
+	},
   updateRegister: function () {
     this.setState({signin_register: "Register"});
   },
   updateSignIn: function () {
     this.setState({signin_register: "Sign In"});
   },
+	hide: function() {
+		this.resetState();
+		window.hideModal();
+	},
   render: function() {
     return (
       <section id="modal" className="modal ">
         <article className="modal-content">
-          <span className="modal-close" onClick={window.hideModal}>CANCEL</span>
+          <span className="modal-close" onClick={this.hide}>CANCEL</span>
 
-        <h1 id="signin"> SIGN IN </h1>
+        <h1 id="signin"> {this.state.signin_register} </h1>
         <p> Register for free to access all AveEasy has to offer including premium data and advanced features. </p>
         <ul className="group">
           <li onClick={this.updateRegister} className="signintab">Register</li>
@@ -40,7 +58,7 @@ var LoginForm = React.createClass({
           </form>
 
         </article>
-        <div onClick={window.hideModal} className="modal-screen js-hide-modal"></div>
+        <div onClick={this.hide} className="modal-screen js-hide-modal"></div>
       </section>
     );
   },
@@ -48,7 +66,8 @@ var LoginForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var user = {username: this.state.name, password: this.state.password};
-    ApiUtil.login(user, function() {});
+		ApiUtil.login(user);
+		this.hide();
   },
 
   updateName: function(e) {

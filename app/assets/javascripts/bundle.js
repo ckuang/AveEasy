@@ -52,11 +52,12 @@
 	var IndexRoute = ReactRouter.IndexRoute;
 	var hashHistory = ReactRouter.hashHistory;
 	var Listings = __webpack_require__(216);
-	var HeaderNav = __webpack_require__(246);
-	var ListingShow = __webpack_require__(243);
-	var LoginForm = __webpack_require__(244);
+	var HeaderNav = __webpack_require__(245);
+	var ListingShow = __webpack_require__(247);
+	var LoginForm = __webpack_require__(248);
+	var SearchForm = __webpack_require__(251);
 	
-	var ApiUtil = __webpack_require__(238);
+	var ApiUtil = __webpack_require__(240);
 	window.ApiUtil = ApiUtil;
 	
 	var App = React.createClass({
@@ -94,6 +95,7 @@
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
+	  React.createElement(IndexRoute, { component: SearchForm }),
 	  React.createElement(Route, { path: '/listings', component: Listings }),
 	  React.createElement(Route, { path: 'listing/:id', component: ListingShow })
 	);
@@ -24789,9 +24791,9 @@
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(238);
-	var Listing = __webpack_require__(240);
-	var GoogleMap = __webpack_require__(242);
+	var ApiUtil = __webpack_require__(240);
+	var Listing = __webpack_require__(242);
+	var GoogleMap = __webpack_require__(244);
 	
 	var Listings = React.createClass({
 	  displayName: 'Listings',
@@ -24835,8 +24837,8 @@
 
 	var Store = __webpack_require__(218).Store;
 	var _listings = [];
-	var ListingConstants = __webpack_require__(234);
-	var AppDispatcher = __webpack_require__(235);
+	var ListingConstants = __webpack_require__(236);
+	var AppDispatcher = __webpack_require__(237);
 	var ListingStore = new Store(AppDispatcher);
 	
 	var resetListings = function (listings) {
@@ -24877,7 +24879,7 @@
 	
 	module.exports.Container = __webpack_require__(219);
 	module.exports.MapStore = __webpack_require__(223);
-	module.exports.Mixin = __webpack_require__(233);
+	module.exports.Mixin = __webpack_require__(235);
 	module.exports.ReduceStore = __webpack_require__(224);
 	module.exports.Store = __webpack_require__(225);
 
@@ -25279,7 +25281,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var FluxReduceStore = __webpack_require__(224);
-	var Immutable = __webpack_require__(232);
+	var Immutable = __webpack_require__(234);
 	
 	var invariant = __webpack_require__(221);
 	
@@ -25430,7 +25432,7 @@
 	
 	var FluxStore = __webpack_require__(225);
 	
-	var abstractMethod = __webpack_require__(231);
+	var abstractMethod = __webpack_require__(233);
 	var invariant = __webpack_require__(221);
 	
 	var FluxReduceStore = (function (_FluxStore) {
@@ -25739,8 +25741,8 @@
 	var EmitterSubscription = __webpack_require__(228);
 	var EventSubscriptionVendor = __webpack_require__(230);
 	
-	var emptyFunction = __webpack_require__(15);
-	var invariant = __webpack_require__(13);
+	var emptyFunction = __webpack_require__(232);
+	var invariant = __webpack_require__(231);
 	
 	/**
 	 * @class BaseEventEmitter
@@ -26040,7 +26042,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(13);
+	var invariant = __webpack_require__(231);
 	
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -26134,6 +26136,103 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 */
+	
+	'use strict';
+	
+	/**
+	 * Use invariant() to assert state which your program assumes to be true.
+	 *
+	 * Provide sprintf-style format (only %s is supported) and arguments
+	 * to provide information about what broke and what you were
+	 * expecting.
+	 *
+	 * The invariant message will be stripped in production, but the invariant
+	 * will remain to ensure logic does not differ in production.
+	 */
+	
+	function invariant(condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
+	    if (format === undefined) {
+	      throw new Error('invariant requires an error message argument');
+	    }
+	  }
+	
+	  if (!condition) {
+	    var error;
+	    if (format === undefined) {
+	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+	    } else {
+	      var args = [a, b, c, d, e, f];
+	      var argIndex = 0;
+	      error = new Error(format.replace(/%s/g, function () {
+	        return args[argIndex++];
+	      }));
+	      error.name = 'Invariant Violation';
+	    }
+	
+	    error.framesToPop = 1; // we don't care about invariant's own frame
+	    throw error;
+	  }
+	}
+	
+	module.exports = invariant;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ },
+/* 232 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 */
+	
+	"use strict";
+	
+	function makeEmptyFunction(arg) {
+	  return function () {
+	    return arg;
+	  };
+	}
+	
+	/**
+	 * This function accepts and discards inputs; it has no side effects. This is
+	 * primarily useful idiomatically for overridable function endpoints which
+	 * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+	 */
+	function emptyFunction() {}
+	
+	emptyFunction.thatReturns = makeEmptyFunction;
+	emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+	emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+	emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+	emptyFunction.thatReturnsThis = function () {
+	  return this;
+	};
+	emptyFunction.thatReturnsArgument = function (arg) {
+	  return arg;
+	};
+	
+	module.exports = emptyFunction;
+
+/***/ },
+/* 233 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
 	 * Copyright (c) 2014-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -26157,7 +26256,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 232 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31144,7 +31243,7 @@
 	}));
 
 /***/ },
-/* 233 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -31267,7 +31366,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 234 */
+/* 236 */
 /***/ function(module, exports) {
 
 	var ListingConstants = {
@@ -31277,15 +31376,15 @@
 	module.exports = ListingConstants;
 
 /***/ },
-/* 235 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(236).Dispatcher;
+	var Dispatcher = __webpack_require__(238).Dispatcher;
 	
 	module.exports = new Dispatcher();
 
 /***/ },
-/* 236 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31297,11 +31396,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Dispatcher = __webpack_require__(237);
+	module.exports.Dispatcher = __webpack_require__(239);
 
 
 /***/ },
-/* 237 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -31538,10 +31637,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 238 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ApiActions = __webpack_require__(239);
+	var ApiActions = __webpack_require__(241);
+	var SessionActions = __webpack_require__(250);
+	var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 	
 	var ApiUtil = {
 	  fetchListings: function () {
@@ -31561,18 +31662,27 @@
 	      }
 	    });
 	  },
+	  fetchNeigborhood: function (coord) {
+	    var lat = coord.lat.toString();
+	    var lng = coord.lng.toString();
+	    var req = "http://streeteasy.com/nyc/api/areas/for_location?lon=" + lng + "&lat=" + lat + "&key=" + streeteasykey + "&format=json";
+	    $.ajax({
+	      url: req,
+	      success: function (neighborhood) {
+	        debugger;
+	        var address_coord = address_location.results[0].geometry.location;
+	      }
+	    });
+	  },
 	
-	  login: function (credentials, callback) {
-	
+	  login: function (credentials) {
 	    $.ajax({
 	      type: "POST",
 	      url: "/api/session",
 	      dataType: "json",
 	      data: { user: credentials },
 	      success: function (currentUser) {
-	        debugger;
 	        SessionActions.currentUserReceived(currentUser);
-	        callback && callback();
 	      }
 	    });
 	  },
@@ -31606,11 +31716,11 @@
 	module.exports = ApiUtil;
 
 /***/ },
-/* 239 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var AppDispatcher = __webpack_require__(235);
-	var ListingConstants = __webpack_require__(234);
+	var AppDispatcher = __webpack_require__(237);
+	var ListingConstants = __webpack_require__(236);
 	
 	var ApiActions = {
 	  receiveAll: function (listings) {
@@ -31625,20 +31735,26 @@
 	      marker: marker,
 	      pos: pos
 	    });
+	  },
+	  updateRegister: function (register) {
+	    AppDispatcher.dispatch({
+	      actionType: "updateregister",
+	      register: register
+	    });
 	  }
 	};
 	
 	module.exports = ApiActions;
 
 /***/ },
-/* 240 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(241);
+	var MarkerStore = __webpack_require__(243);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(238);
-	var ApiActions = __webpack_require__(239);
+	var ApiUtil = __webpack_require__(240);
+	var ApiActions = __webpack_require__(241);
 	var hashHistory = ReactRouter.hashHistory;
 	
 	var Listing = React.createClass({
@@ -31717,13 +31833,13 @@
 	module.exports = Listing;
 
 /***/ },
-/* 241 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
 	var _marker = {};
 	var _pos = {};
-	var AppDispatcher = __webpack_require__(235);
+	var AppDispatcher = __webpack_require__(237);
 	var MarkerStore = new Store(AppDispatcher);
 	
 	MarkerStore.marker = function () {
@@ -31747,12 +31863,12 @@
 	module.exports = MarkerStore;
 
 /***/ },
-/* 242 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(241);
-	var ApiUtil = __webpack_require__(238);
+	var MarkerStore = __webpack_require__(243);
+	var ApiUtil = __webpack_require__(240);
 	
 	var Map = React.createClass({
 		displayName: 'Map',
@@ -31796,15 +31912,120 @@
 	module.exports = Map;
 
 /***/ },
-/* 243 */
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var SessionStore = __webpack_require__(246);
+	var ApiActions = __webpack_require__(241);
+	var ApiUtil = __webpack_require__(240);
+	
+	var HeaderNav = React.createClass({
+		displayName: 'HeaderNav',
+	
+		getInitialState: function () {
+			return { loggedIn: false };
+		},
+		changeState: function () {
+			this.setState({ loggedIn: SessionStore.isLoggedIn() });
+		},
+		componentDidMount: function () {
+			SessionStore.addListener(this.changeState);
+		},
+		register: function () {
+			ApiActions.updateRegister("Register");
+			window.showModal();
+		},
+		signIn: function () {
+			ApiActions.updateRegister("Sign In");
+			window.showModal();
+		},
+		render: function () {
+			if (this.state.loggedIn) {
+				return React.createElement(
+					'ul',
+					null,
+					React.createElement(
+						'li',
+						null,
+						'My Properties'
+					),
+					React.createElement(
+						'li',
+						{ onClick: ApiUtil.logout },
+						'LogOut'
+					)
+				);
+			} else {
+				return React.createElement(
+					'div',
+					null,
+					React.createElement(
+						'p',
+						{ className: 'register', onClick: this.register },
+						'REGISTER (IT\'S FREE)'
+					),
+					React.createElement(
+						'p',
+						{ className: 'signin', onClick: this.signIn },
+						'Sign In'
+					)
+				);
+			}
+		}
+	});
+	
+	module.exports = HeaderNav;
+
+/***/ },
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(218).Store;
+	var AppDispatcher = __webpack_require__(237);
+	var SessionStore = new Store(AppDispatcher);
+	
+	var _currentUser;
+	var _currentUserHasBeenFetched = false;
+	
+	SessionStore.currentUser = function () {
+	  return _currentUser;
+	};
+	
+	SessionStore.isLoggedIn = function () {
+	  return !!_currentUser;
+	};
+	
+	SessionStore.currentUserHasBeenFetched = function () {
+	  return _currentUserHasBeenFetched;
+	};
+	
+	SessionStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "current_user_received":
+	      _currentUser = payload.currentUser;
+	      _currentUserHasBeenFetched = true;
+	      SessionStore.__emitChange();
+	      break;
+	    case "logout":
+	      _currentUser = null;
+	      SessionStore.__emitChange();
+	      break;
+	  }
+	};
+	
+	module.exports = SessionStore;
+
+/***/ },
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(238);
-	var Listing = __webpack_require__(240);
-	var GoogleMap = __webpack_require__(242);
+	var ApiUtil = __webpack_require__(240);
+	var Listing = __webpack_require__(242);
+	var GoogleMap = __webpack_require__(244);
 	var ListingStore = __webpack_require__(217);
 	var ListingShow = React.createClass({
 	  displayName: 'ListingShow',
@@ -31872,12 +32093,13 @@
 	module.exports = ListingShow;
 
 /***/ },
-/* 244 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ApiUtil = __webpack_require__(238);
-	var ApiActions = __webpack_require__(239);
+	var ApiUtil = __webpack_require__(240);
+	var ApiActions = __webpack_require__(241);
+	var RegisterStore = __webpack_require__(249);
 	
 	var LoginForm = React.createClass({
 	  displayName: 'LoginForm',
@@ -31890,14 +32112,31 @@
 	    return {
 	      name: "",
 	      password: "",
-	      signin_register: "Register"
+	      signin_register: ""
 	    };
+	  },
+	  resetState: function () {
+	    this.setState({
+	      name: "",
+	      password: "",
+	      signin_register: ""
+	    });
+	  },
+	  setRegister: function () {
+	    this.setState({ signin_register: RegisterStore.register() });
+	  },
+	  componentDidMount: function () {
+	    RegisterStore.addListener(this.setRegister);
 	  },
 	  updateRegister: function () {
 	    this.setState({ signin_register: "Register" });
 	  },
 	  updateSignIn: function () {
 	    this.setState({ signin_register: "Sign In" });
+	  },
+	  hide: function () {
+	    this.resetState();
+	    window.hideModal();
 	  },
 	  render: function () {
 	    return React.createElement(
@@ -31908,13 +32147,15 @@
 	        { className: 'modal-content' },
 	        React.createElement(
 	          'span',
-	          { className: 'modal-close', onClick: window.hideModal },
+	          { className: 'modal-close', onClick: this.hide },
 	          'CANCEL'
 	        ),
 	        React.createElement(
 	          'h1',
 	          { id: 'signin' },
-	          ' SIGN IN '
+	          ' ',
+	          this.state.signin_register,
+	          ' '
 	        ),
 	        React.createElement(
 	          'p',
@@ -31947,14 +32188,15 @@
 	          )
 	        )
 	      ),
-	      React.createElement('div', { onClick: window.hideModal, className: 'modal-screen js-hide-modal' })
+	      React.createElement('div', { onClick: this.hide, className: 'modal-screen js-hide-modal' })
 	    );
 	  },
 	
 	  handleSubmit: function (e) {
 	    e.preventDefault();
 	    var user = { username: this.state.name, password: this.state.password };
-	    ApiUtil.login(user, function () {});
+	    ApiUtil.login(user);
+	    this.hide();
 	  },
 	
 	  updateName: function (e) {
@@ -31970,74 +32212,242 @@
 	module.exports = LoginForm;
 
 /***/ },
-/* 245 */,
-/* 246 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var SessionStore = __webpack_require__(247);
-	
-	var HeaderNav = React.createClass({
-	  displayName: 'HeaderNav',
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'p',
-	        { className: 'register', onClick: window.showModal },
-	        'REGISTER (IT\'S FREE)'
-	      ),
-	      React.createElement(
-	        'p',
-	        { className: 'signin', onClick: window.showModal },
-	        'Sign In'
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = HeaderNav;
-
-/***/ },
-/* 247 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
-	var AppDispatcher = __webpack_require__(235);
-	var SessionStore = new Store(AppDispatcher);
+	var _register = "";
+	var AppDispatcher = __webpack_require__(237);
+	var RegisterStore = new Store(AppDispatcher);
 	
-	var _currentUser;
-	var _currentUserHasBeenFetched = false;
-	
-	SessionStore.currentUser = function () {
-	  return _currentUser;
+	RegisterStore.register = function () {
+	  return _register;
 	};
 	
-	SessionStore.isLoggedIn = function () {
-	  return !!_currentUser;
-	};
-	
-	SessionStore.currentUserHasBeenFetched = function () {
-	  return _currentUserHasBeenFetched;
-	};
-	
-	SessionStore.__onDispatch = function (payload) {
+	RegisterStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case SessionConstants.CURRENT_USER_RECEIVED:
-	      _currentUser = payload.currentUser;
-	      _currentUserHasBeenFetched = true;
-	      SessionStore.__emitChange();
-	      break;
-	    case SessionConstants.LOGOUT:
-	      _currentUser = null;
-	      SessionStore.__emitChange();
+	    case "updateregister":
+	      _register = payload.register;
+	      RegisterStore.__emitChange();
 	      break;
 	  }
 	};
 	
-	module.exports = SessionStore;
+	module.exports = RegisterStore;
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(237);
+	
+	var SessionActions = {
+	  currentUserReceived: function (currentUser) {
+	    AppDispatcher.dispatch({
+	      actionType: "current_user_received",
+	      currentUser: currentUser
+	    });
+	  },
+	
+	  logout: function () {
+	    AppDispatcher.dispatch({
+	      actionType: "logout"
+	    });
+	  }
+	};
+	
+	module.exports = SessionActions;
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ApiUtil = __webpack_require__(240);
+	var ApiActions = __webpack_require__(241);
+	var Costs = [100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000];
+	var Beds = [0, 1, 2, 3, 4];
+	var Baths = [1, 1.5, 2, 2.5, 3, 3.5, 4];
+	
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+	
+	var SearchForm = React.createClass({
+		displayName: 'SearchForm',
+	
+		getInitialState: function () {
+			return {
+				location: "",
+				category: "",
+				pricelow: 0,
+				pricehigh: 10000000,
+				beds: 0,
+				baths: 0,
+				userid: null
+			};
+		},
+	
+		render: function () {
+	
+			var cost_selector = [];
+			var bed_selector = [];
+			var bath_selector = [];
+			for (var x = 0; x < Costs.length; x++) {
+				cost_selector.push(React.createElement(
+					'option',
+					{ key: x, value: Costs[x] },
+					'$',
+					numberWithCommas(Costs[x])
+				));
+			}
+			for (var y = 0; y < Beds.length; y++) {
+				if (Beds[y] === 0) {
+					bed_selector.push(React.createElement(
+						'option',
+						{ key: y, value: Beds[y] },
+						'Studio'
+					));
+				} else {
+					bed_selector.push(React.createElement(
+						'option',
+						{ key: y, value: Beds[y] },
+						Beds[y],
+						' bedrooms'
+					));
+				}
+			}
+			for (var z = 0; z < Baths.length; z++) {
+				bath_selector.push(React.createElement(
+					'option',
+					{ key: z, value: Baths[z] },
+					Baths[z],
+					' or more'
+				));
+			}
+	
+			return React.createElement(
+				'div',
+				{ className: 'search-field group' },
+				React.createElement(
+					'form',
+					{ className: 'search group', onSubmit: this.handleSubmit },
+					React.createElement(
+						'h1',
+						{ className: 'search-header' },
+						' New York City Real Estate'
+					),
+					React.createElement(
+						'label',
+						{ className: 'label-location' },
+						'Location'
+					),
+					React.createElement('input', { className: 'location', onChange: this.updateLocation, type: 'text', placeholder: 'Neighborhood / Address / Building / Keyword', value: this.state.location }),
+					React.createElement(
+						'label',
+						{ className: 'label-type' },
+						'Type'
+					),
+					React.createElement(
+						'select',
+						{ className: 'type-select' },
+						React.createElement(
+							'option',
+							{ value: 'condo' },
+							'Condos'
+						),
+						React.createElement(
+							'option',
+							{ value: 'coop' },
+							'Co-ops'
+						),
+						React.createElement(
+							'option',
+							{ value: 'house' },
+							'Houses'
+						)
+					),
+					React.createElement(
+						'label',
+						{ className: 'label-price' },
+						'Price'
+					),
+					React.createElement(
+						'select',
+						{ className: 'cost-select' },
+						cost_selector
+					),
+					React.createElement(
+						'p',
+						null,
+						' to '
+					),
+					React.createElement(
+						'select',
+						{ className: 'cost-select' },
+						cost_selector
+					),
+					React.createElement(
+						'label',
+						{ className: 'label-bed' },
+						'Bedrooms'
+					),
+					React.createElement(
+						'select',
+						{ className: 'bed-select' },
+						bed_selector
+					),
+					React.createElement(
+						'label',
+						{ className: 'label-bath' },
+						'Bathrooms'
+					),
+					React.createElement(
+						'select',
+						{ className: 'bath-select' },
+						bath_selector
+					),
+					React.createElement(
+						'button',
+						{ className: 'button' },
+						'SEARCH'
+					)
+				)
+			);
+		},
+	
+		handleSubmit: function (e) {
+			e.preventDefault();
+			var user = { username: this.state.name, password: this.state.password };
+			ApiUtil.login(user);
+			this.hide();
+		},
+	
+		updateLocation: function (e) {
+			this.setState({ location: e.currentTarget.value });
+		},
+		updateCategory: function (e) {
+			this.setState({ category: e.currentTarget.value });
+		},
+		updatePriceLow: function (e) {
+			this.setState({ pricelow: e.currentTarget.value });
+		},
+		updatePriceHigh: function (e) {
+			this.setState({ pricehigh: e.currentTarget.value });
+		},
+		updateBeds: function (e) {
+			this.setState({ beds: e.currentTarget.value });
+		},
+		updateBaths: function (e) {
+			this.setState({ baths: e.currentTarget.value });
+		},
+		updateUserId: function (e) {
+			this.setState({ userid: e.currentTarget.value });
+		}
+	
+	});
+	
+	module.exports = SearchForm;
 
 /***/ }
 /******/ ]);

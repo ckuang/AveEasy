@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-
+gem 'rest-client'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.5'
 # Use postgresql as the database for Active Record
@@ -14,6 +14,7 @@ gem 'coffee-rails', '~> 4.1.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+gem 'aws-sdk', '>= 2.0'
 
 gem "paperclip", '5.0.0.beta1'
 gem 'figaro'

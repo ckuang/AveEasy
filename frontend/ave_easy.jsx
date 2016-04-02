@@ -9,6 +9,7 @@ var Listings = require('./components/listingsindex');
 var HeaderNav = require('./components/header_nav');
 var ListingShow = require('./components/listingshow');
 var LoginForm = require('./components/login_form');
+var SearchForm = require('./components/searchform');
 
 var ApiUtil = require('./util/api_util');
 window.ApiUtil = ApiUtil;
@@ -35,7 +36,8 @@ var App = React.createClass({
 
 var routes = (
   <Route path="/" component={App}>
-    <Route path="/listings" component={Listings}>
+		<IndexRoute component={SearchForm}/>
+		<Route path="/listings" component={Listings}>
   </Route>
     <Route path="listing/:id" component={ListingShow}/>
   </Route>
