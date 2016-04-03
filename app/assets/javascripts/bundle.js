@@ -50,14 +50,15 @@
 	var Router = ReactRouter.Router;
 	var Route = ReactRouter.Route;
 	var IndexRoute = ReactRouter.IndexRoute;
-	var hashHistory = ReactRouter.hashHistory;
 	var Listings = __webpack_require__(216);
-	var HeaderNav = __webpack_require__(245);
-	var ListingShow = __webpack_require__(247);
-	var LoginForm = __webpack_require__(248);
+	var HeaderNav = __webpack_require__(246);
+	var ListingShow = __webpack_require__(248);
+	var LoginForm = __webpack_require__(249);
 	var SearchForm = __webpack_require__(251);
-	
+	var BrowserHistory = __webpack_require__(159).browserHistory;
+	var SessionStore = __webpack_require__(247);
 	var ApiUtil = __webpack_require__(240);
+	
 	window.ApiUtil = ApiUtil;
 	
 	var App = React.createClass({
@@ -92,12 +93,19 @@
 	  }
 	});
 	
+	var requireAuth = function (nextState, replace, asyncCompletionCallback) {
+	  if (!SessionStore.currentUserHasBeenFetched()) {
+	    ApiUtil.fetchCurrentUser();
+	    asyncCompletionCallback();
+	  }
+	};
+	
 	var routes = React.createElement(
 	  Route,
-	  { path: '/', component: App },
+	  { path: '/', component: App, onEnter: requireAuth },
 	  React.createElement(IndexRoute, { component: SearchForm }),
 	  React.createElement(Route, { path: '/listings', component: Listings }),
-	  React.createElement(Route, { path: 'listing/:id', component: ListingShow })
+	  React.createElement(Route, { path: '/listing/:id', component: ListingShow })
 	);
 	
 	window.showModal = function () {
@@ -111,7 +119,7 @@
 	document.addEventListener("DOMContentLoaded", function () {
 	  ReactDOM.render(React.createElement(
 	    Router,
-	    { history: hashHistory },
+	    { history: BrowserHistory },
 	    routes
 	  ), document.getElementById('content'));
 	});
@@ -24792,8 +24800,8 @@
 	var ListingStore = __webpack_require__(217);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(240);
-	var Listing = __webpack_require__(242);
-	var GoogleMap = __webpack_require__(244);
+	var Listing = __webpack_require__(243);
+	var GoogleMap = __webpack_require__(245);
 	
 	var Listings = React.createClass({
 	  displayName: 'Listings',
@@ -24837,12 +24845,17 @@
 
 	var Store = __webpack_require__(218).Store;
 	var _listings = [];
+	var _listing = {};
 	var ListingConstants = __webpack_require__(236);
 	var AppDispatcher = __webpack_require__(237);
 	var ListingStore = new Store(AppDispatcher);
 	
 	var resetListings = function (listings) {
 	  _listings = listings.slice(0);
+	};
+	
+	ListingStore.listing = function () {
+	  return _listing;
 	};
 	
 	ListingStore.all = function () {
@@ -24856,7 +24869,11 @@
 	ListingStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
 	    case ListingConstants.LISTINGS_RECEIVED:
-	      var result = resetListings(payload.listings);
+	      resetListings(payload.listings);
+	      ListingStore.__emitChange();
+	      break;
+	    case ListingConstants.LISTING_RECEIVED:
+	      _listing = payload.listing;
 	      ListingStore.__emitChange();
 	      break;
 	  }
@@ -31370,7 +31387,8 @@
 /***/ function(module, exports) {
 
 	var ListingConstants = {
-	  LISTINGS_RECEIVED: "LISTINGS_RECEIVED"
+	  LISTINGS_RECEIVED: "LISTINGS_RECEIVED",
+	  LISTING_RECEIVED: "LISTING_RECEIVED"
 	};
 	
 	module.exports = ListingConstants;
@@ -31641,10 +31659,22 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var ApiActions = __webpack_require__(241);
-	var SessionActions = __webpack_require__(250);
+	var SessionActions = __webpack_require__(242);
 	var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 	
 	var ApiUtil = {
+	  fetchListing: function (id) {
+	    var path = "/api/listings/" + id;
+	    $.ajax({
+	      type: "GET",
+	      url: path,
+	      dataType: "json",
+	      success: function (listing) {
+	        ApiActions.receiveListing(listing);
+	      }
+	    });
+	  },
+	
 	  fetchListings: function () {
 	    $.ajax({
 	      url: "api/listings",
@@ -31669,7 +31699,6 @@
 	    $.ajax({
 	      url: req,
 	      success: function (neighborhood) {
-	        debugger;
 	        var address_coord = address_location.results[0].geometry.location;
 	      }
 	    });
@@ -31679,6 +31708,18 @@
 	    $.ajax({
 	      type: "POST",
 	      url: "/api/session",
+	      dataType: "json",
+	      data: { user: credentials },
+	      success: function (currentUser) {
+	        SessionActions.currentUserReceived(currentUser);
+	      }
+	    });
+	  },
+	
+	  register: function (credentials) {
+	    $.ajax({
+	      type: "POST",
+	      url: "/api/users",
 	      dataType: "json",
 	      data: { user: credentials },
 	      success: function (currentUser) {
@@ -31698,16 +31739,14 @@
 	    });
 	  },
 	
-	  fetchCurrentUser: function (completion) {
+	  fetchCurrentUser: function () {
 	    $.ajax({
-	      type: "GET",
 	      url: "/api/session",
-	      dataType: "json",
 	      success: function (currentUser) {
 	        SessionActions.currentUserReceived(currentUser);
 	      },
 	      complete: function () {
-	        completion && completion();
+	        SessionActions.checkedForUser();
 	      }
 	    });
 	  }
@@ -31727,6 +31766,12 @@
 	    AppDispatcher.dispatch({
 	      actionType: ListingConstants.LISTINGS_RECEIVED,
 	      listings: listings
+	    });
+	  },
+	  receiveListing: function (listing) {
+	    AppDispatcher.dispatch({
+	      actionType: ListingConstants.LISTING_RECEIVED,
+	      listing: listing
 	    });
 	  },
 	  updateMarker: function (marker, pos) {
@@ -31750,8 +31795,37 @@
 /* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var AppDispatcher = __webpack_require__(237);
+	
+	var SessionActions = {
+	  currentUserReceived: function (currentUser) {
+	    AppDispatcher.dispatch({
+	      actionType: "current_user_received",
+	      currentUser: currentUser
+	    });
+	  },
+	
+	  checkedForUser: function () {
+	    AppDispatcher.dispatch({
+	      actionType: "checkedForUser"
+	    });
+	  },
+	
+	  logout: function () {
+	    AppDispatcher.dispatch({
+	      actionType: "logout"
+	    });
+	  }
+	};
+	
+	module.exports = SessionActions;
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(243);
+	var MarkerStore = __webpack_require__(244);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
@@ -31779,7 +31853,6 @@
 	  },
 	
 	  showListing: function () {
-	
 	    this.context.router.push('/listing/' + this.props.listing.id);
 	  },
 	
@@ -31833,7 +31906,7 @@
 	module.exports = Listing;
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
@@ -31863,11 +31936,11 @@
 	module.exports = MarkerStore;
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(243);
+	var MarkerStore = __webpack_require__(244);
 	var ApiUtil = __webpack_require__(240);
 	
 	var Map = React.createClass({
@@ -31895,6 +31968,10 @@
 			this.map = new google.maps.Map(mapDOMNode, mapOptions);
 		},
 	
+		componentWillUnmount: function () {
+			this.markerListener.remove();
+		},
+	
 		render: function () {
 	
 			if (this.state.marker) {
@@ -31912,73 +31989,85 @@
 	module.exports = Map;
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var SessionStore = __webpack_require__(246);
+	var SessionStore = __webpack_require__(247);
 	var ApiActions = __webpack_require__(241);
 	var ApiUtil = __webpack_require__(240);
 	
 	var HeaderNav = React.createClass({
-		displayName: 'HeaderNav',
+	  displayName: 'HeaderNav',
 	
-		getInitialState: function () {
-			return { loggedIn: false };
-		},
-		changeState: function () {
-			this.setState({ loggedIn: SessionStore.isLoggedIn() });
-		},
-		componentDidMount: function () {
-			SessionStore.addListener(this.changeState);
-		},
-		register: function () {
-			ApiActions.updateRegister("Register");
-			window.showModal();
-		},
-		signIn: function () {
-			ApiActions.updateRegister("Sign In");
-			window.showModal();
-		},
-		render: function () {
-			if (this.state.loggedIn) {
-				return React.createElement(
-					'ul',
-					null,
-					React.createElement(
-						'li',
-						null,
-						'My Properties'
-					),
-					React.createElement(
-						'li',
-						{ onClick: ApiUtil.logout },
-						'LogOut'
-					)
-				);
-			} else {
-				return React.createElement(
-					'div',
-					null,
-					React.createElement(
-						'p',
-						{ className: 'register', onClick: this.register },
-						'REGISTER (IT\'S FREE)'
-					),
-					React.createElement(
-						'p',
-						{ className: 'signin', onClick: this.signIn },
-						'Sign In'
-					)
-				);
-			}
-		}
+	  getInitialState: function () {
+	    return {
+	      currentUser: {},
+	      loggedIn: false,
+	      usercheck: false
+	    };
+	  },
+	  changeState: function () {
+	    this.setState({
+	      loggedIn: SessionStore.isLoggedIn(),
+	      currentUser: SessionStore.currentUser(),
+	      usercheck: true
+	    });
+	  },
+	  componentDidMount: function () {
+	    SessionStore.addListener(this.changeState);
+	  },
+	  register: function () {
+	    ApiActions.updateRegister("Register");
+	    window.showModal();
+	  },
+	  signIn: function () {
+	    ApiActions.updateRegister("Sign In");
+	    window.showModal();
+	  },
+	  render: function () {
+	    if (this.state.usercheck) {
+	      if (this.state.loggedIn) {
+	        return React.createElement(
+	          'ul',
+	          null,
+	          React.createElement(
+	            'li',
+	            null,
+	            'My Properties'
+	          ),
+	          React.createElement(
+	            'li',
+	            { onClick: ApiUtil.logout },
+	            'LogOut'
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          'div',
+	          null,
+	          React.createElement(
+	            'p',
+	            { className: 'register', onClick: this.register },
+	            'REGISTER (IT\'S FREE)'
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'signin', onClick: this.signIn },
+	            'Sign In'
+	          )
+	        );
+	      }
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
 	});
 	
 	module.exports = HeaderNav;
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
@@ -31987,6 +32076,7 @@
 	
 	var _currentUser;
 	var _currentUserHasBeenFetched = false;
+	var _checkedForUser = false;
 	
 	SessionStore.currentUser = function () {
 	  return _currentUser;
@@ -32000,11 +32090,19 @@
 	  return _currentUserHasBeenFetched;
 	};
 	
+	SessionStore.checkedForUser = function () {
+	  return _checkedForUser;
+	};
+	
 	SessionStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
 	    case "current_user_received":
 	      _currentUser = payload.currentUser;
 	      _currentUserHasBeenFetched = true;
+	      SessionStore.__emitChange();
+	      break;
+	    case "checkedForUser":
+	      _checkedForUser = true;
 	      SessionStore.__emitChange();
 	      break;
 	    case "logout":
@@ -32017,89 +32115,99 @@
 	module.exports = SessionStore;
 
 /***/ },
-/* 247 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(240);
-	var Listing = __webpack_require__(242);
-	var GoogleMap = __webpack_require__(244);
+	var Listing = __webpack_require__(243);
+	var GoogleMap = __webpack_require__(245);
 	var ListingStore = __webpack_require__(217);
+	var BrowserHistory = __webpack_require__(159).browserHistory;
+	
 	var ListingShow = React.createClass({
 	  displayName: 'ListingShow',
 	
-	
-	  getStateFromStore: function () {
-	    return { listing: ListingStore.find(parseInt(this.props.params.id) - 1) };
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
 	  },
-	
-	  _onChange: function () {
-	    this.setState(this.getStateFromStore());
+	  _listingChanged: function () {
+	    this.setState({ listing: ListingStore.listing() });
 	  },
-	
+	  componentDidMount: function () {
+	    this.listingListener = ListingStore.addListener(this._listingChanged);
+	    ApiUtil.fetchListing(this.props.params.id);
+	  },
+	  componentWillUnmount: function () {
+	    this.listingListener.remove();
+	  },
 	  getInitialState: function () {
-	    return this.getStateFromStore();
+	    return { listing: false };
 	  },
 	
 	  render: function () {
-	    return React.createElement(
-	      'ul',
-	      null,
-	      React.createElement(
-	        'li',
-	        { className: 'show_address detail' },
-	        ' ',
-	        this.state.listing.address
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'show_price detail' },
-	        ' $',
-	        this.state.listing.price,
-	        ' FOR SALE'
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'show_beds detail' },
-	        ' ',
-	        this.state.listing.beds,
-	        ' beds'
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'show_baths detail' },
-	        ' ',
-	        this.state.listing.baths,
-	        ' bath'
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'show_category detail' },
-	        ' ',
-	        this.state.listing.category
-	      ),
-	      React.createElement(
-	        'li',
-	        { className: 'show_company detail' },
-	        ' Listed by ',
-	        this.state.listing.company
-	      )
-	    );
+	    if (!this.state.listing) {
+	      return React.createElement('div', null);
+	    } else {
+	      return React.createElement(
+	        'ul',
+	        null,
+	        React.createElement(
+	          'li',
+	          { className: 'show_address detail' },
+	          ' ',
+	          this.state.listing.address
+	        ),
+	        React.createElement(
+	          'li',
+	          { className: 'show_price detail' },
+	          ' $',
+	          this.state.listing.price,
+	          ' FOR SALE'
+	        ),
+	        React.createElement(
+	          'li',
+	          { className: 'show_beds detail' },
+	          ' ',
+	          this.state.listing.beds,
+	          ' beds'
+	        ),
+	        React.createElement(
+	          'li',
+	          { className: 'show_baths detail' },
+	          ' ',
+	          this.state.listing.baths,
+	          ' bath'
+	        ),
+	        React.createElement(
+	          'li',
+	          { className: 'show_category detail' },
+	          ' ',
+	          this.state.listing.category
+	        ),
+	        React.createElement(
+	          'li',
+	          { className: 'show_company detail' },
+	          ' Listed by ',
+	          this.state.listing.company
+	        )
+	      );
+	    }
 	  }
 	});
 	
 	module.exports = ListingShow;
 
 /***/ },
-/* 248 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
-	var RegisterStore = __webpack_require__(249);
+	var RegisterStore = __webpack_require__(250);
 	
 	var LoginForm = React.createClass({
 	  displayName: 'LoginForm',
@@ -32115,6 +32223,7 @@
 	      signin_register: ""
 	    };
 	  },
+	
 	  resetState: function () {
 	    this.setState({
 	      name: "",
@@ -32122,22 +32231,26 @@
 	      signin_register: ""
 	    });
 	  },
-	  setRegister: function () {
-	    this.setState({ signin_register: RegisterStore.register() });
-	  },
+	
 	  componentDidMount: function () {
 	    RegisterStore.addListener(this.setRegister);
 	  },
+	  setRegister: function () {
+	    this.setState({ signin_register: RegisterStore.register() });
+	  },
+	
 	  updateRegister: function () {
 	    this.setState({ signin_register: "Register" });
 	  },
 	  updateSignIn: function () {
 	    this.setState({ signin_register: "Sign In" });
 	  },
+	
 	  hide: function () {
 	    this.resetState();
 	    window.hideModal();
 	  },
+	
 	  render: function () {
 	    return React.createElement(
 	      'section',
@@ -32195,7 +32308,12 @@
 	  handleSubmit: function (e) {
 	    e.preventDefault();
 	    var user = { username: this.state.name, password: this.state.password };
-	    ApiUtil.login(user);
+	    if (this.state.signin_register === "Sign In") {
+	      ApiUtil.login(user);
+	    } else {
+	      ApiUtil.register(user);
+	    }
+	
 	    this.hide();
 	  },
 	
@@ -32212,7 +32330,7 @@
 	module.exports = LoginForm;
 
 /***/ },
-/* 249 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
@@ -32236,29 +32354,6 @@
 	module.exports = RegisterStore;
 
 /***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(237);
-	
-	var SessionActions = {
-	  currentUserReceived: function (currentUser) {
-	    AppDispatcher.dispatch({
-	      actionType: "current_user_received",
-	      currentUser: currentUser
-	    });
-	  },
-	
-	  logout: function () {
-	    AppDispatcher.dispatch({
-	      actionType: "logout"
-	    });
-	  }
-	};
-	
-	module.exports = SessionActions;
-
-/***/ },
 /* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -32277,19 +32372,12 @@
 		displayName: 'SearchForm',
 	
 		getInitialState: function () {
-			return {
-				location: "",
-				category: "",
-				pricelow: 0,
-				pricehigh: 10000000,
-				beds: 0,
-				baths: 0,
-				userid: null
+			return { location: "", category: "", pricelow: 0, pricehigh: 10000000,
+				beds: 0, baths: 0, userid: null
 			};
 		},
 	
 		render: function () {
-	
 			var cost_selector = [];
 			var bed_selector = [];
 			var bath_selector = [];

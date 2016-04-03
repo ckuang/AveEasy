@@ -28,6 +28,10 @@ var Map = React.createClass({
 
     },
 
+    componentWillUnmount: function () {
+      this.markerListener.remove();
+    },
+
 	render: function () {
 
     if (this.state.marker) {

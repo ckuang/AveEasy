@@ -8,6 +8,12 @@ var SessionActions = {
     });
   },
 
+  checkedForUser: function() {
+    AppDispatcher.dispatch({
+      actionType: "checkedForUser",
+    });
+  },
+
   logout: function() {
     AppDispatcher.dispatch({
       actionType: "logout"

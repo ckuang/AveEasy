@@ -15,6 +15,7 @@ var LoginForm = React.createClass({
       signin_register: ""
     };
   },
+
 	resetState: function () {
 		this.setState({
       name: "",
@@ -22,22 +23,27 @@ var LoginForm = React.createClass({
       signin_register: ""
 		});
 	},
+
+  componentDidMount: function () {
+    RegisterStore.addListener(this.setRegister);
+  },
 	setRegister: function () {
 		this.setState({signin_register: RegisterStore.register()});
 	},
-	componentDidMount: function () {
-		RegisterStore.addListener(this.setRegister);
-	},
+
+
   updateRegister: function () {
     this.setState({signin_register: "Register"});
   },
   updateSignIn: function () {
     this.setState({signin_register: "Sign In"});
   },
+
 	hide: function() {
 		this.resetState();
 		window.hideModal();
 	},
+
   render: function() {
     return (
       <section id="modal" className="modal ">
@@ -66,8 +72,13 @@ var LoginForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var user = {username: this.state.name, password: this.state.password};
-		ApiUtil.login(user);
-		this.hide();
+    if (this.state.signin_register === "Sign In") {
+      ApiUtil.login(user);
+    } else {
+      ApiUtil.register(user);
+    }
+
+    this.hide();
   },
 
   updateName: function(e) {

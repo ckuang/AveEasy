@@ -4,14 +4,15 @@ var ReactRouter = require('react-router');
 var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 var IndexRoute = ReactRouter.IndexRoute;
-var hashHistory = ReactRouter.hashHistory;
 var Listings = require('./components/listingsindex');
 var HeaderNav = require('./components/header_nav');
 var ListingShow = require('./components/listingshow');
 var LoginForm = require('./components/login_form');
 var SearchForm = require('./components/searchform');
-
+var BrowserHistory = require('react-router').browserHistory;
+var SessionStore = require('./stores/session');
 var ApiUtil = require('./util/api_util');
+
 window.ApiUtil = ApiUtil;
 
 var App = React.createClass({
@@ -24,7 +25,7 @@ var App = React.createClass({
         <LoginForm />
         <nav className="group">
           <p className="nyc">New York City</p>
-          <HeaderNav />
+          <HeaderNav/>
         </nav>
         <h1 className="logo">AveEasy</h1>
         <br/>
@@ -34,12 +35,18 @@ var App = React.createClass({
   }
 });
 
+var requireAuth = function (nextState, replace, asyncCompletionCallback) {
+    if (!SessionStore.currentUserHasBeenFetched()) {
+      ApiUtil.fetchCurrentUser();
+      asyncCompletionCallback();
+    }
+  };
+
 var routes = (
-  <Route path="/" component={App}>
+  <Route path="/" component={App} onEnter={requireAuth}>
 		<IndexRoute component={SearchForm}/>
-		<Route path="/listings" component={Listings}>
-  </Route>
-    <Route path="listing/:id" component={ListingShow}/>
+		<Route path="/listings" component={Listings} />
+    <Route path="/listing/:id" component={ListingShow}/>
   </Route>
 );
 
@@ -52,5 +59,5 @@ $("#modal").removeClass("is-active");
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  ReactDOM.render(<Router history={hashHistory}>{routes}</Router>, document.getElementById('content'));
+  ReactDOM.render(<Router history={BrowserHistory}>{routes}</Router>, document.getElementById('content'));
 });

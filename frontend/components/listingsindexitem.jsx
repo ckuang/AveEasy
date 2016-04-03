@@ -25,7 +25,6 @@ var Listing = React.createClass({
   },
 
   showListing: function () {
-
     this.context.router.push('/listing/' + this.props.listing.id);
   },
 

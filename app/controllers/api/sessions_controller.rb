@@ -1,7 +1,7 @@
 class Api::SessionsController < ApplicationController
 
   def show
-    if logged_in?
+    if signed_in?
       render json: current_user
     else
       render json: {message: "Not logged in"}, status: 401
@@ -18,7 +18,7 @@ class Api::SessionsController < ApplicationController
       sign_in(user)
       render json: user
     else
-	
+
       render json: { message: "Invalid credentials" }, status: 401
     end
 

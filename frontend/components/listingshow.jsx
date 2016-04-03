@@ -5,23 +5,31 @@ var ApiUtil = require('../util/api_util');
 var Listing = require('./listingsindexitem');
 var GoogleMap = require('./map');
 var ListingStore = require('../stores/listing');
+var BrowserHistory = require('react-router').browserHistory;
+
 var ListingShow = React.createClass({
-
-  getStateFromStore: function () {
-    return { listing: ListingStore.find(parseInt(this.props.params.id) - 1) };
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
   },
-
-  _onChange: function () {
-    this.setState(this.getStateFromStore());
+  _listingChanged: function () {
+    this.setState({listing: ListingStore.listing()});
   },
-
+  componentDidMount: function () {
+    this.listingListener = ListingStore.addListener(this._listingChanged);
+    ApiUtil.fetchListing(this.props.params.id);
+  },
+  componentWillUnmount: function () {
+    this.listingListener.remove();
+  },
   getInitialState: function () {
-   return this.getStateFromStore();
+   return {listing: false};
   },
 
   render: function () {
+    if (!this.state.listing) {
+      return (<div></div>);
+    } else {
     return(
-
       <ul>
         <li className="show_address detail"> {this.state.listing.address}</li>
         <li className="show_price detail"> ${this.state.listing.price} FOR SALE</li>
@@ -30,9 +38,8 @@ var ListingShow = React.createClass({
         <li className="show_category detail"> {this.state.listing.category}</li>
         <li className="show_company detail"> Listed by {this.state.listing.company}</li>
       </ul>
-
     );
-
+    }
   }
 });
 

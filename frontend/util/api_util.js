@@ -3,6 +3,18 @@ var SessionActions = require('../actions/session_actions');
 var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 
 var ApiUtil = {
+  fetchListing: function (id) {
+    var path = "/api/listings/" + id;
+    $.ajax({
+      type: "GET",
+      url: path,
+      dataType: "json",
+      success: function (listing) {
+        ApiActions.receiveListing(listing);
+      }
+    });
+  },
+
   fetchListings: function () {
     $.ajax({
       url: "api/listings",
@@ -28,7 +40,6 @@ var ApiUtil = {
 		$.ajax({
 			url: req,
 			success: function (neighborhood) {
-				debugger
 				var address_coord = address_location.results[0].geometry.location;
 			}
 		});
@@ -39,6 +50,18 @@ var ApiUtil = {
     $.ajax({
       type: "POST",
       url: "/api/session",
+      dataType: "json",
+      data: {user: credentials},
+      success: function(currentUser) {
+				SessionActions.currentUserReceived(currentUser);
+			}
+    });
+  },
+
+  register: function(credentials) {
+    $.ajax({
+      type: "POST",
+      url: "/api/users",
       dataType: "json",
       data: {user: credentials},
       success: function(currentUser) {
@@ -58,16 +81,15 @@ var ApiUtil = {
     });
   },
 
-  fetchCurrentUser: function(completion) {
+
+  fetchCurrentUser: function() {
     $.ajax({
-      type: "GET",
       url: "/api/session",
-      dataType: "json",
       success: function(currentUser) {
         SessionActions.currentUserReceived(currentUser);
       },
-      complete: function() {
-        completion && completion();
+      complete: function () {
+        SessionActions.checkedForUser();
       }
     });
   }

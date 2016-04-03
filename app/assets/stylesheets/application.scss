@@ -136,7 +136,8 @@ nav {
 }
 
 .map {
-	position: fixed;
+  position: fixed !important;
+  right: 300px;
   display: block;
   width: 310px;
   height: 310px;

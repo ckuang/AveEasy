@@ -5,10 +5,18 @@ var ApiUtil = require('../util/api_util');
 
 var HeaderNav = React.createClass({
 	getInitialState: function () {
-		return({loggedIn: false});
+		return({
+      currentUser: {},
+      loggedIn: false,
+      usercheck: false
+    });
 	},
 	changeState: function () {
-		this.setState({loggedIn: SessionStore.isLoggedIn()});
+		this.setState({
+      loggedIn: SessionStore.isLoggedIn(),
+      currentUser: SessionStore.currentUser(),
+      usercheck: true
+    });
 	},
 	componentDidMount: function () {
 		SessionStore.addListener(this.changeState);
@@ -22,21 +30,26 @@ var HeaderNav = React.createClass({
 		window.showModal();
 	},
 	render: function () {
-		if (this.state.loggedIn) {
-			return (
-				<ul>
-					<li>My Properties</li>
-					<li onClick={ApiUtil.logout}>LogOut</li>
-				</ul>
-		);
-		} else {
-		return (
-      <div>
-        <p className="register" onClick={this.register}>REGISTER (IT'S FREE)</p>
-        <p className="signin" onClick={this.signIn}>Sign In</p>
-			</div>
-    );
-		}
+    if (this.state.usercheck) {
+  		if (this.state.loggedIn) {
+  			return (
+  				<ul>
+  					<li>My Properties</li>
+  					<li onClick={ApiUtil.logout}>LogOut</li>
+  				</ul>
+  		);
+  		} else {
+  		return (
+        <div>
+          <p className="register" onClick={this.register}>REGISTER (IT'S FREE)</p>
+          <p className="signin" onClick={this.signIn}>Sign In</p>
+  			</div>
+      );
+  		}
+    } else {
+      return (<div></div>);
+    }
+
   }
 });
 

@@ -12,19 +12,12 @@ function numberWithCommas(x) {
 
 var SearchForm = React.createClass({
 	getInitialState: function () {
-		return ({
-			location: "",
-			category: "",
-			pricelow: 0,
-			pricehigh: 10000000,
-			beds: 0,
-			baths: 0,
-			userid: null
+		return ({ location: "", category: "", pricelow: 0, pricehigh: 10000000,
+			beds: 0, baths: 0, userid: null
 		});
 	},
 
 	render: function() {
-
 		var cost_selector = [];
 		var bed_selector = [];
 		var bath_selector = [];
@@ -51,13 +44,10 @@ var SearchForm = React.createClass({
 		}
 
 		return (
-
 			<div className="search-field group">
-
 					<form className="search group" onSubmit={this.handleSubmit}>
 					<h1 className="search-header"> New York City Real Estate</h1>
 					<label className="label-location">Location</label>
-
 
 					<input className="location" onChange={this.updateLocation} type="text" placeholder="Neighborhood / Address / Building / Keyword" value={this.state.location}/>
 
