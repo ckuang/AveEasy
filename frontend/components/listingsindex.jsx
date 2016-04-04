@@ -7,32 +7,35 @@ var GoogleMap = require('./map');
 
 var Listings = React.createClass({
   getInitialState: function () {
-    return { listings: [] };
+    return { listings: false };
   },
   _listingChanged: function () {
     this.setState({listings: ListingStore.all()});
   },
   componentDidMount: function () {
     this.listingListener = ListingStore.addListener(this._listingChanged);
-    ApiUtil.fetchListings();
+		ApiUtil.fetchListings(this.props.location.query);
   },
   componentWillUnmount: function () {
     this.listingListener.remove();
   },
 
   render: function () {
-    return(
-      <div>
-      <ul className="idx_listings">
-        <GoogleMap />
-        {this.state.listings.map(function (listing) {
-          return <Listing key={listing.id} listing={listing} />;
-        })}
-      </ul>
-        {this.props.children}
-      </div>
-    );
-
+		if (this.state.listings) {
+			return(
+	      <div>
+	      <ul className="idx_listings">
+	        <GoogleMap />
+	        {this.state.listings.map(function (listing) {
+	          return <Listing key={listing.id} listing={listing} />;
+	        })}
+	      </ul>
+	        {this.props.children}
+	      </div>
+	    );
+		} else {
+			return (<div></div>);
+		}
   }
 });
 

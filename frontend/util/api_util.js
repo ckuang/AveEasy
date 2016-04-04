@@ -4,10 +4,9 @@ var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 
 var ApiUtil = {
   fetchListing: function (id) {
-    var path = "/api/listings/" + id;
     $.ajax({
       type: "GET",
-      url: path,
+      url: "/api/listings/" + id,
       dataType: "json",
       success: function (listing) {
         ApiActions.receiveListing(listing);
@@ -15,9 +14,11 @@ var ApiUtil = {
     });
   },
 
-  fetchListings: function () {
-    $.ajax({
-      url: "api/listings",
+  fetchListings: function (listings_params) {
+		$.ajax({
+      url: "/api/listings",
+			dataType: "json",
+			data: {listings: listings_params},
       success: function (listings) {
         ApiActions.receiveAll(listings);
       }

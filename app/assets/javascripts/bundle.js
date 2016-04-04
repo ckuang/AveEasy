@@ -24804,37 +24804,41 @@
 	var GoogleMap = __webpack_require__(245);
 	
 	var Listings = React.createClass({
-	  displayName: 'Listings',
+			displayName: 'Listings',
 	
-	  getInitialState: function () {
-	    return { listings: [] };
-	  },
-	  _listingChanged: function () {
-	    this.setState({ listings: ListingStore.all() });
-	  },
-	  componentDidMount: function () {
-	    this.listingListener = ListingStore.addListener(this._listingChanged);
-	    ApiUtil.fetchListings();
-	  },
-	  componentWillUnmount: function () {
-	    this.listingListener.remove();
-	  },
+			getInitialState: function () {
+					return { listings: false };
+			},
+			_listingChanged: function () {
+					this.setState({ listings: ListingStore.all() });
+			},
+			componentDidMount: function () {
+					this.listingListener = ListingStore.addListener(this._listingChanged);
+					ApiUtil.fetchListings(this.props.location.query);
+			},
+			componentWillUnmount: function () {
+					this.listingListener.remove();
+			},
 	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'ul',
-	        { className: 'idx_listings' },
-	        React.createElement(GoogleMap, null),
-	        this.state.listings.map(function (listing) {
-	          return React.createElement(Listing, { key: listing.id, listing: listing });
-	        })
-	      ),
-	      this.props.children
-	    );
-	  }
+			render: function () {
+					if (this.state.listings) {
+							return React.createElement(
+									'div',
+									null,
+									React.createElement(
+											'ul',
+											{ className: 'idx_listings' },
+											React.createElement(GoogleMap, null),
+											this.state.listings.map(function (listing) {
+													return React.createElement(Listing, { key: listing.id, listing: listing });
+											})
+									),
+									this.props.children
+							);
+					} else {
+							return React.createElement('div', null);
+					}
+			}
 	});
 	
 	module.exports = Listings;
@@ -31664,10 +31668,9 @@
 	
 	var ApiUtil = {
 	  fetchListing: function (id) {
-	    var path = "/api/listings/" + id;
 	    $.ajax({
 	      type: "GET",
-	      url: path,
+	      url: "/api/listings/" + id,
 	      dataType: "json",
 	      success: function (listing) {
 	        ApiActions.receiveListing(listing);
@@ -31675,9 +31678,11 @@
 	    });
 	  },
 	
-	  fetchListings: function () {
+	  fetchListings: function (listings_params) {
 	    $.ajax({
-	      url: "api/listings",
+	      url: "/api/listings",
+	      dataType: "json",
+	      data: { listings: listings_params },
 	      success: function (listings) {
 	        ApiActions.receiveAll(listings);
 	      }
@@ -32371,10 +32376,33 @@
 	var SearchForm = React.createClass({
 		displayName: 'SearchForm',
 	
+		contextTypes: {
+			router: React.PropTypes.object.isRequired
+		},
 		getInitialState: function () {
-			return { location: "", category: "", pricelow: 0, pricehigh: 10000000,
-				beds: 0, baths: 0, userid: null
+			return { location: "",
+				category: "any",
+				pricelow: "any",
+				pricehigh: "any",
+				beds: "any",
+				baths: "any",
+				userid: null
 			};
+		},
+		showListings: function () {
+			this.context.router.push({
+				pathname: '/listings',
+				query: {
+					location: this.state.location,
+					category: this.state.category,
+					pricelow: this.state.pricelow,
+					pricehigh: this.state.pricehigh,
+					beds: this.state.beds,
+					baths: this.state.baths,
+					userid: this.state.userid
+				},
+				state: {}
+			});
 		},
 	
 		render: function () {
@@ -32438,7 +32466,12 @@
 					),
 					React.createElement(
 						'select',
-						{ className: 'type-select' },
+						{ className: 'type-select', onChange: this.updateCategory },
+						React.createElement(
+							'option',
+							{ value: '{null}' },
+							'Any Types'
+						),
 						React.createElement(
 							'option',
 							{ value: 'condo' },
@@ -32462,7 +32495,12 @@
 					),
 					React.createElement(
 						'select',
-						{ className: 'cost-select' },
+						{ className: 'cost-select', onChange: this.updatePriceLow },
+						React.createElement(
+							'option',
+							{ value: 'any' },
+							'Any'
+						),
 						cost_selector
 					),
 					React.createElement(
@@ -32472,7 +32510,12 @@
 					),
 					React.createElement(
 						'select',
-						{ className: 'cost-select' },
+						{ className: 'cost-select', onChange: this.updatePriceHigh },
+						React.createElement(
+							'option',
+							{ value: 'any' },
+							'Any'
+						),
 						cost_selector
 					),
 					React.createElement(
@@ -32482,7 +32525,12 @@
 					),
 					React.createElement(
 						'select',
-						{ className: 'bed-select' },
+						{ className: 'bed-select', onChange: this.updateBeds },
+						React.createElement(
+							'option',
+							{ value: 'any' },
+							'Any Beds'
+						),
 						bed_selector
 					),
 					React.createElement(
@@ -32492,7 +32540,12 @@
 					),
 					React.createElement(
 						'select',
-						{ className: 'bath-select' },
+						{ className: 'bath-select', onChange: this.updateBaths },
+						React.createElement(
+							'option',
+							{ value: 'any' },
+							'Any Baths'
+						),
 						bath_selector
 					),
 					React.createElement(
@@ -32506,9 +32559,10 @@
 	
 		handleSubmit: function (e) {
 			e.preventDefault();
-			var user = { username: this.state.name, password: this.state.password };
-			ApiUtil.login(user);
-			this.hide();
+			if (this.state.location === "") {
+				this.state.location = "any";
+			}
+			this.showListings();
 		},
 	
 		updateLocation: function (e) {

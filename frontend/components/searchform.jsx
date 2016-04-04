@@ -11,9 +11,32 @@ function numberWithCommas(x) {
 }
 
 var SearchForm = React.createClass({
+	contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
 	getInitialState: function () {
-		return ({ location: "", category: "", pricelow: 0, pricehigh: 10000000,
-			beds: 0, baths: 0, userid: null
+		return ({ location: "",
+							category: "any",
+							pricelow: "any",
+							pricehigh: "any",
+							beds: "any",
+							baths: "any",
+							userid: null
+						});
+	},
+	showListings: function () {
+		this.context.router.push({
+		  pathname: '/listings',
+		  query: {
+				location: this.state.location,
+				category: this.state.category,
+				pricelow: this.state.pricelow,
+				pricehigh: this.state.pricehigh,
+				beds: this.state.beds,
+				baths: this.state.baths,
+				userid: this.state.userid,
+			},
+		  state: {}
 		});
 	},
 
@@ -52,28 +75,33 @@ var SearchForm = React.createClass({
 					<input className="location" onChange={this.updateLocation} type="text" placeholder="Neighborhood / Address / Building / Keyword" value={this.state.location}/>
 
 					<label className="label-type">Type</label>
-					<select className="type-select">
+					<select className="type-select" onChange={this.updateCategory}>
+						<option value="{null}">Any Types</option>
 						<option value="condo">Condos</option>
 						<option value="coop">Co-ops</option>
 						<option value="house">Houses</option>
 					</select>
 
 					<label className="label-price">Price</label>
-					<select className="cost-select">
+					<select className="cost-select" onChange={this.updatePriceLow}>
+						<option value="any">Any</option>
 						{cost_selector}
 					</select>
 					<p> to </p>
-					<select className="cost-select">
+					<select className="cost-select" onChange={this.updatePriceHigh}>
+						<option value="any">Any</option>
 						{cost_selector}
 					</select>
 
 					<label className="label-bed">Bedrooms</label>
-					<select className="bed-select">
+					<select className="bed-select" onChange={this.updateBeds}>
+						<option value="any">Any Beds</option>
 						{bed_selector}
 					</select>
 
 					<label className="label-bath">Bathrooms</label>
-					<select className="bath-select">
+					<select className="bath-select" onChange={this.updateBaths}>
+						<option value="any">Any Baths</option>
 						{bath_selector}
 					</select>
 
@@ -87,9 +115,10 @@ var SearchForm = React.createClass({
 
 	handleSubmit: function(e) {
 		e.preventDefault();
-		var user = {username: this.state.name, password: this.state.password};
-		ApiUtil.login(user);
-		this.hide();
+		if (this.state.location === "") {
+			this.state.location = "any";
+		}
+		this.showListings();
 	},
 
 	updateLocation: function(e) {
