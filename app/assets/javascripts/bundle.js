@@ -31673,6 +31673,7 @@
 	      url: "/api/listings/" + id,
 	      dataType: "json",
 	      success: function (listing) {
+	
 	        ApiActions.receiveListing(listing);
 	      }
 	    });
@@ -31835,7 +31836,9 @@
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
 	var hashHistory = ReactRouter.hashHistory;
-	
+	function numberWithCommas(x) {
+	  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
 	var Listing = React.createClass({
 	  displayName: 'Listing',
 	
@@ -31865,6 +31868,7 @@
 	    return React.createElement(
 	      'li',
 	      { onClick: this.showListing, onMouseEnter: this.place_marker, className: 'idx_listing group' },
+	      React.createElement('img', { className: 'idx_image', src: this.props.listing.image }),
 	      React.createElement(
 	        'p',
 	        { className: 'idx_address detail' },
@@ -31875,7 +31879,7 @@
 	        'p',
 	        { className: 'idx_price detail' },
 	        ' $',
-	        this.props.listing.price,
+	        numberWithCommas(this.props.listing.price),
 	        ' FOR SALE'
 	      ),
 	      React.createElement(
@@ -31896,7 +31900,9 @@
 	        'p',
 	        { className: 'idx_category detail' },
 	        ' ',
-	        this.props.listing.category
+	        this.props.listing.category,
+	        ' in ',
+	        this.props.listing.neighborhood
 	      ),
 	      React.createElement(
 	        'p',
@@ -32053,7 +32059,7 @@
 	          null,
 	          React.createElement(
 	            'p',
-	            { className: 'register', onClick: this.register },
+	            { className: 'register register-link', onClick: this.register },
 	            'REGISTER (IT\'S FREE)'
 	          ),
 	          React.createElement(
@@ -32131,7 +32137,9 @@
 	var GoogleMap = __webpack_require__(245);
 	var ListingStore = __webpack_require__(217);
 	var BrowserHistory = __webpack_require__(159).browserHistory;
-	
+	function numberWithCommas(x) {
+	  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
 	var ListingShow = React.createClass({
 	  displayName: 'ListingShow',
 	
@@ -32169,7 +32177,7 @@
 	          'li',
 	          { className: 'show_price detail' },
 	          ' $',
-	          this.state.listing.price,
+	          numberWithCommas(this.state.listing.price),
 	          ' FOR SALE'
 	        ),
 	        React.createElement(

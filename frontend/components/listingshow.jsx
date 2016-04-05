@@ -6,7 +6,9 @@ var Listing = require('./listingsindexitem');
 var GoogleMap = require('./map');
 var ListingStore = require('../stores/listing');
 var BrowserHistory = require('react-router').browserHistory;
-
+function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 var ListingShow = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
@@ -32,7 +34,7 @@ var ListingShow = React.createClass({
     return(
       <ul>
         <li className="show_address detail"> {this.state.listing.address}</li>
-        <li className="show_price detail"> ${this.state.listing.price} FOR SALE</li>
+        <li className="show_price detail"> ${numberWithCommas(this.state.listing.price)} FOR SALE</li>
         <li className="show_beds detail"> {this.state.listing.beds} beds</li>
         <li className="show_baths detail"> {this.state.listing.baths} bath</li>
         <li className="show_category detail"> {this.state.listing.category}</li>

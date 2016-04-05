@@ -9,6 +9,7 @@ var ApiUtil = {
       url: "/api/listings/" + id,
       dataType: "json",
       success: function (listing) {
+
         ApiActions.receiveListing(listing);
       }
     });

@@ -6,7 +6,6 @@ class Api::ListingsController < ApplicationController
   end
 
   def index
-		byebug
 		@listings = category(price(baths(beds)))
   end
 

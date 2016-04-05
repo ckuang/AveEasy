@@ -6,14 +6,21 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+a = File.open("app/assets/images/boardwalk_hotel.jpg")
+b = File.open("app/assets/images/boardwalk.jpg")
+c = File.open("app/assets/images/hotels.jpg")
+d = File.open("app/assets/images/houses.jpg")
+e = File.open("app/assets/images/pass_go.jpg")
+pics = [a, b, c, d, e]
+
 require 'csv'
 
 csv_text = File.read("db/addresses.csv")
 csv = CSV.parse(csv_text, :headers => true)
 x = 0
-byebug
 while x < 100
-	coop = csv[x].to_hash.values[1].split("\n")
+
+	coop = csv[x * 20].to_hash.values[1].split("\n")
 	address = coop[0]
 	lat_lng = coop[2].delete("()").split(", ")
 	lat = lat_lng[0]
@@ -26,16 +33,17 @@ while x < 100
 		category: "coop",
 	  user_id: 3,
 		lat: lat.to_f,
-	  lng: lng.to_f)
+	  lng: lng.to_f,
+		neighborhood: csv[x * 20].to_hash.values[2])
 	new_listing.save!
+	pic = Listing.find_by_address(address).pictures.new
+	pic.image = pics[rand(5)]
+	pic.save!
 	x += 1
 end
 
-listing_category = ["condo", "coop", "house"]
+
 
 sennacy = User.create!(username: 'sennacy', password: 'starwars', realtor: true, realtor_company: 'App Academy')
 mr_monopoly = User.create!(username: 'monopoly', password: 'password', realtor: true, realtor_company: 'Hasbro')
 jordan = User.create!(username: "jordan", password: "rodriguez", realtor: true, realtor_company: "Compass")
-boardwalk = Listing.create!(address: 'Boardwalk', beds: 8, baths: 6, price: 400, category: "condo", user_id: 2, lat: 40.7176157, lng: -74.0138261)
-pennsylvania = Listing.create!(address: "Pennsylvania Ave", beds: 6, baths: 3, price: 320, category: "coop", user_id: 2, lat: 40.7032775, lng: -74.0170279)
-app_academy = Listing.create!(address: '598 Broadway', beds: 0, baths: 2, price: 15000, category: "office", user_id: 1, lat: 40.7250849, lng: -73.9976342)

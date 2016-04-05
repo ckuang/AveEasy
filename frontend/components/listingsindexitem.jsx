@@ -4,11 +4,16 @@ var ReactRouter = require('react-router');
 var ApiUtil = require('../util/api_util');
 var ApiActions = require('../actions/api_action');
 var hashHistory = ReactRouter.hashHistory;
-
+function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 var Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
+
+
+
 
   getInitialState: function () {
     return {};
@@ -29,13 +34,14 @@ var Listing = React.createClass({
   },
 
   render: function () {
-    return(
+		return(
     <li onClick={this.showListing} onMouseEnter={this.place_marker} className="idx_listing group">
-      <p className="idx_address detail"> {this.props.listing.address}</p>
-      <p className="idx_price detail"> ${this.props.listing.price} FOR SALE</p>
+			<img className="idx_image" src={this.props.listing.image}></img>
+			<p className="idx_address detail"> {this.props.listing.address}</p>
+      <p className="idx_price detail"> ${numberWithCommas(this.props.listing.price)} FOR SALE</p>
       <p className="idx_beds detail"> {this.props.listing.beds} beds</p>
       <p className="idx_baths detail"> {this.props.listing.baths} bath</p>
-      <p className="idx_category detail"> {this.props.listing.category}</p>
+      <p className="idx_category detail"> {this.props.listing.category} in {this.props.listing.neighborhood}</p>
       <p className="idx_company detail"> Listed by {this.props.listing.company}</p>
     </li>);
  }

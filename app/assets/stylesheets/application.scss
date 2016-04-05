@@ -59,12 +59,27 @@ nav {
   font-weight: bold;
 }
 
+
+.register-link {
+  margin-left: 10px;
+  border: 1px solid #fdc435;
+  line-height: 19px;
+  float: right;
+}
+
+.register-link:hover {
+  background: #fdc435;
+}
+
 .register {
   display: block;
-  padding-left: 10px;
-  float: right;
-  font-size: 14px;
-  font-weight: normal;
+  color: black;
+  font-size: 12px;
+  padding: 0px 10px;
+  text-align: left;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .signin {
@@ -83,6 +98,13 @@ nav {
   width: 980px;
   margin: auto;
   border-bottom: 5px solid black;
+}
+
+.idx_image {
+	display: block;
+	width: 170px;
+	height: 113.328px;
+	float: left;
 }
 
 .idx_listing {

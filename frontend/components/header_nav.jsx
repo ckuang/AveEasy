@@ -41,7 +41,7 @@ var HeaderNav = React.createClass({
   		} else {
   		return (
         <div>
-          <p className="register" onClick={this.register}>REGISTER (IT'S FREE)</p>
+          <p className="register register-link" onClick={this.register}>REGISTER (IT'S FREE)</p>
           <p className="signin" onClick={this.signIn}>Sign In</p>
   			</div>
       );
