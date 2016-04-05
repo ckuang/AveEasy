@@ -27,7 +27,9 @@ var App = React.createClass({
           <p className="nyc">New York City</p>
           <HeaderNav/>
         </nav>
-        <h1 className="logo">AveEasy</h1>
+        <nav className="group logo">
+          <img src={window.logourl} />
+        </nav>
         <br/>
         {this.props.children}
       </div>

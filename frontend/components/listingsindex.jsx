@@ -28,7 +28,7 @@ var Listings = React.createClass({
 	        <GoogleMap />
 	        {this.state.listings.map(function (listing) {
 	          return <Listing key={listing.id} listing={listing} />;
-	        })}
+          })}
 	      </ul>
 	        {this.props.children}
 	      </div>

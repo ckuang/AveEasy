@@ -83,9 +83,9 @@
 	        React.createElement(HeaderNav, null)
 	      ),
 	      React.createElement(
-	        'h1',
-	        { className: 'logo' },
-	        'AveEasy'
+	        'nav',
+	        { className: 'group logo' },
+	        React.createElement('img', { src: window.logourl })
 	      ),
 	      React.createElement('br', null),
 	      this.props.children
@@ -24804,41 +24804,41 @@
 	var GoogleMap = __webpack_require__(245);
 	
 	var Listings = React.createClass({
-			displayName: 'Listings',
+	  displayName: 'Listings',
 	
-			getInitialState: function () {
-					return { listings: false };
-			},
-			_listingChanged: function () {
-					this.setState({ listings: ListingStore.all() });
-			},
-			componentDidMount: function () {
-					this.listingListener = ListingStore.addListener(this._listingChanged);
-					ApiUtil.fetchListings(this.props.location.query);
-			},
-			componentWillUnmount: function () {
-					this.listingListener.remove();
-			},
+	  getInitialState: function () {
+	    return { listings: false };
+	  },
+	  _listingChanged: function () {
+	    this.setState({ listings: ListingStore.all() });
+	  },
+	  componentDidMount: function () {
+	    this.listingListener = ListingStore.addListener(this._listingChanged);
+	    ApiUtil.fetchListings(this.props.location.query);
+	  },
+	  componentWillUnmount: function () {
+	    this.listingListener.remove();
+	  },
 	
-			render: function () {
-					if (this.state.listings) {
-							return React.createElement(
-									'div',
-									null,
-									React.createElement(
-											'ul',
-											{ className: 'idx_listings' },
-											React.createElement(GoogleMap, null),
-											this.state.listings.map(function (listing) {
-													return React.createElement(Listing, { key: listing.id, listing: listing });
-											})
-									),
-									this.props.children
-							);
-					} else {
-							return React.createElement('div', null);
-					}
-			}
+	  render: function () {
+	    if (this.state.listings) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'ul',
+	          { className: 'idx_listings' },
+	          React.createElement(GoogleMap, null),
+	          this.state.listings.map(function (listing) {
+	            return React.createElement(Listing, { key: listing.id, listing: listing });
+	          })
+	        ),
+	        this.props.children
+	      );
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
 	});
 	
 	module.exports = Listings;
@@ -31679,6 +31679,16 @@
 	    });
 	  },
 	
+	  saveListing: function (id) {
+	    $.ajax({
+	      type: "POST",
+	      url: "/api/saved_listings",
+	      dataType: "json",
+	      data: { save_listing: { listing_id: id } },
+	      success: function () {}
+	    });
+	  },
+	
 	  fetchListings: function (listings_params) {
 	    $.ajax({
 	      url: "/api/listings",
@@ -31836,9 +31846,11 @@
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
 	var hashHistory = ReactRouter.hashHistory;
+	
 	function numberWithCommas(x) {
 	  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
+	
 	var Listing = React.createClass({
 	  displayName: 'Listing',
 	
@@ -31860,8 +31872,11 @@
 	    ApiActions.updateMarker(marker, pos);
 	  },
 	
-	  showListing: function () {
-	    this.context.router.push('/listing/' + this.props.listing.id);
+	  showListing: function (e) {
+	    e.preventDefault();
+	    if (e.target.className !== "save_button") {
+	      this.context.router.push('/listing/' + this.props.listing.id);
+	    }
 	  },
 	
 	  render: function () {
@@ -31909,6 +31924,11 @@
 	        { className: 'idx_company detail' },
 	        ' Listed by ',
 	        this.props.listing.company
+	      ),
+	      React.createElement(
+	        'button',
+	        { className: 'save_button', onClick: ApiUtil.saveListing(this.props.listing.id) },
+	        ' Save '
 	      )
 	    );
 	  }
@@ -32011,6 +32031,9 @@
 	var HeaderNav = React.createClass({
 	  displayName: 'HeaderNav',
 	
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
 	  getInitialState: function () {
 	    return {
 	      currentUser: {},
@@ -32036,6 +32059,15 @@
 	    ApiActions.updateRegister("Sign In");
 	    window.showModal();
 	  },
+	
+	  showSavedListings: function () {
+	    this.context.router.push({
+	      pathname: '/listings',
+	      query: {},
+	      state: {}
+	    });
+	  },
+	
 	  render: function () {
 	    if (this.state.usercheck) {
 	      if (this.state.loggedIn) {
@@ -32044,7 +32076,7 @@
 	          null,
 	          React.createElement(
 	            'li',
-	            null,
+	            { onClick: this.showSavedListings },
 	            'My Properties'
 	          ),
 	          React.createElement(

@@ -15,6 +15,17 @@ var ApiUtil = {
     });
   },
 
+  saveListing: function(id) {
+    $.ajax({
+      type: "POST",
+      url: "/api/saved_listings",
+      dataType: "json",
+      data: {save_listing: {listing_id: id}},
+      success: function () {
+      }
+    });
+  },
+
   fetchListings: function (listings_params) {
 		$.ajax({
       url: "/api/listings",

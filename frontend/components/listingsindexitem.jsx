@@ -4,16 +4,16 @@ var ReactRouter = require('react-router');
 var ApiUtil = require('../util/api_util');
 var ApiActions = require('../actions/api_action');
 var hashHistory = ReactRouter.hashHistory;
+
+
 function numberWithCommas(x) {
 		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+
 var Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
-
-
-
 
   getInitialState: function () {
     return {};
@@ -29,12 +29,15 @@ var Listing = React.createClass({
     ApiActions.updateMarker(marker, pos);
   },
 
-  showListing: function () {
-    this.context.router.push('/listing/' + this.props.listing.id);
+  showListing: function (e) {
+    e.preventDefault();
+    if (e.target.className !== "save_button") {
+      this.context.router.push('/listing/' + this.props.listing.id);
+    }
   },
 
   render: function () {
-		return(
+    return(
     <li onClick={this.showListing} onMouseEnter={this.place_marker} className="idx_listing group">
 			<img className="idx_image" src={this.props.listing.image}></img>
 			<p className="idx_address detail"> {this.props.listing.address}</p>
@@ -43,7 +46,8 @@ var Listing = React.createClass({
       <p className="idx_baths detail"> {this.props.listing.baths} bath</p>
       <p className="idx_category detail"> {this.props.listing.category} in {this.props.listing.neighborhood}</p>
       <p className="idx_company detail"> Listed by {this.props.listing.company}</p>
-    </li>);
+      <button className="save_button" onClick={ApiUtil.saveListing(this.props.listing.id)}> Save </button>
+  </li>);
  }
 });
 

@@ -5,6 +5,14 @@ class User < ActiveRecord::Base
 
   attr_reader :password
 
+  has_many :saved_listings
+
+  has_many(
+    :savedlistings,
+    through: :saved_listings,
+    source: :listing
+  )
+
   after_initialize :ensure_session_token
   after_initialize :ensure_realtor
 

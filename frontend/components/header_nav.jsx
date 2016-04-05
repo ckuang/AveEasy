@@ -4,7 +4,10 @@ var ApiActions = require('../actions/api_action');
 var ApiUtil = require('../util/api_util');
 
 var HeaderNav = React.createClass({
-	getInitialState: function () {
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
+  getInitialState: function () {
 		return({
       currentUser: {},
       loggedIn: false,
@@ -29,12 +32,21 @@ var HeaderNav = React.createClass({
 		ApiActions.updateRegister("Sign In");
 		window.showModal();
 	},
+
+  showSavedListings: function () {
+		this.context.router.push({
+		  pathname: '/listings',
+		  query: {},
+		  state: {}
+		});
+	},
+
 	render: function () {
     if (this.state.usercheck) {
   		if (this.state.loggedIn) {
   			return (
   				<ul>
-  					<li>My Properties</li>
+  					<li onClick={this.showSavedListings}>My Properties</li>
   					<li onClick={ApiUtil.logout}>LogOut</li>
   				</ul>
   		);

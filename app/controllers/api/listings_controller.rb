@@ -6,7 +6,12 @@ class Api::ListingsController < ApplicationController
   end
 
   def index
-		@listings = category(price(baths(beds)))
+    byebug
+    if params.length == 3
+      @listings = current_user.savedlistings
+    else
+      @listings = category(price(baths(beds)))
+    end
   end
 
 	private
@@ -52,7 +57,7 @@ class Api::ListingsController < ApplicationController
 		if listings_params["category"] == "any"
 			return listings
 		else
-			listings.where("category = #{listings_params["category"]}")
+			listings.where("category = ?", "#{listings_params["category"]}")
 		end
 	end
 
