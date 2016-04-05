@@ -13,6 +13,3 @@
 /tmp
 node_modules
 bundle.js
-
-# Ignore application configuration
-/config/application.yml
