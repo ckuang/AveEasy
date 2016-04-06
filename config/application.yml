@@ -1,9 +1,0 @@
-development:
-  s3_bucket: "ave-easy-dev"
-
-production:
-  s3_bucket: "ave-easy-pro"
-
-s3_region:  "us-east-1"
-s3_access_key_id: "AKIAINWFVXGTBXTFZZGQ"
-s3_secret_access_key: "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"
