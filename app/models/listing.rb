@@ -1,8 +1,13 @@
 class Listing < ActiveRecord::Base
+  include PgSearch
+  pg_search_scope :search_by_neighborhood, :against => :neighborhood, :using => [:tsearch, :trigram]
+
   validates :address, :beds, :baths, :price, :neighborhood, :category, :user_id, :lat, :lng, presence: true
   belongs_to :user
 	has_many :pictures, as: :imageable
   # after_initialize :ensure_neighborhood
+
+
 
 	def ensure_neighborhood
 		streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966"

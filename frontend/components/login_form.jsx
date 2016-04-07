@@ -58,13 +58,19 @@ var LoginForm = React.createClass({
         </ul>
 
           <form onSubmit={this.handleSubmit}>
-            <input onChange={this.updateName} type="text" placeholder="Email Address" value={this.state.name}/>
-            <input onChange={this.updatePassword} type="password" placeholder="Password (At Least 5 Characters)" value={this.state.password}/>
+            <input  onChange={this.updateName}
+                    type="text"
+                    placeholder="Email Address"
+                    value={this.state.name}/>
+            <input  onChange={this.updatePassword}
+                    type="password"
+                    placeholder="Password (At Least 5 Characters)"
+                    value={this.state.password}/>
             <button>{this.state.signin_register}</button>
           </form>
 
         </article>
-        <div onClick={this.hide} className="modal-screen js-hide-modal"></div>
+        <div onClick={this.hide} className="modal-screen"></div>
       </section>
     );
   },

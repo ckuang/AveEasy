@@ -34,9 +34,17 @@ var HeaderNav = React.createClass({
 	},
 
   showSavedListings: function () {
-		this.context.router.push({
+    this.context.router.push({
 		  pathname: '/listings',
-		  query: {},
+      query: {
+        location: "",
+        category: "any",
+        pricelow: "any",
+        pricehigh: "any",
+        beds: "any",
+        baths: "any",
+        userid: "signedin"
+			},
 		  state: {}
 		});
 	},

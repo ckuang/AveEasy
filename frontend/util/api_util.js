@@ -26,6 +26,15 @@ var ApiUtil = {
     });
   },
 
+  fetchSavedListings: function (listings_params) {
+		$.ajax({
+      url: " /api/savedlistings",
+      success: function (listings) {
+        ApiActions.receiveAll(listings);
+      }
+    });
+  },
+
   fetchListings: function (listings_params) {
 		$.ajax({
       url: "/api/listings",

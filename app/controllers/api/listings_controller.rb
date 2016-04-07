@@ -6,11 +6,16 @@ class Api::ListingsController < ApplicationController
   end
 
   def index
-    byebug
-    if params.length == 3
+    if user_id
       @listings = current_user.savedlistings
     else
-      @listings = category(price(baths(beds)))
+      @listings =
+        Listing.where(beds)
+        .where(baths)
+        .where(category)
+        .where(pricelow)
+        .where(pricehigh)
+        .includes(:pictures)
     end
   end
 
@@ -23,45 +28,32 @@ class Api::ListingsController < ApplicationController
 	end
 
 	def beds
-		if listings_params["beds"] == "any"
-			return Listing.all
-		else
-			Listing.where("beds = #{listings_params["beds"]}")
-		end
+    bed = listings_params["beds"]
+    return bed == "any" ? "" : "beds = #{bed}"
 	end
 
-	def baths(listings)
-		if listings_params["baths"] == "any"
-			return listings
-		else
-			listings.where("baths = #{listings_params["baths"]}")
-		end
+	def baths
+    bath = listings_params["baths"]
+    return bath == "any" ? "" : "baths = #{bath}"
 	end
 
-	def price(listings)
-		low = listings_params["pricelow"]
-		high = listings_params["pricehigh"]
-		if low == "any" && high != "any"
-			listings.where("price < #{high}")
-		elsif low != "any" && high == "any"
-			listings.where("price > #{low}")
-		elsif low == "any" && high == "any"
-			listings
-		else
-			listings.where("price BETWEEN #{low} and #{high}")
-		end
+  def pricelow
+    low = listings_params["pricelow"]
+    return low == "any" ? "" : "price > #{low}"
+  end
 
+  def pricehigh
+    high = listings_params["pricehigh"]
+    return high == "any" ? "" : "price < #{high}"
+  end
+
+	def category
+    type = listings_params["category"]
+    return type == "any" ? "" : "category = '#{type}'"
 	end
 
-	def category(listings)
-		if listings_params["category"] == "any"
-			return listings
-		else
-			listings.where("category = ?", "#{listings_params["category"]}")
-		end
-	end
-
-	def user_id
-	end
+  def user_id
+    listings_params["userid"] == "signedin"
+  end
 
 end

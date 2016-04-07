@@ -4,7 +4,7 @@ var ApiActions = require('../actions/api_action');
 var Costs = [100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000];
 var Beds = [0, 1, 2, 3, 4];
 var Baths = [1, 1.5, 2, 2.5, 3, 3.5, 4];
-
+var Neighborhoods = require('./neighborhood_modal');
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -20,8 +20,7 @@ var SearchForm = React.createClass({
 							pricelow: "any",
 							pricehigh: "any",
 							beds: "any",
-							baths: "any",
-							userid: null
+							baths: "any"
 						});
 	},
 	showListings: function () {
@@ -33,12 +32,14 @@ var SearchForm = React.createClass({
 				pricelow: this.state.pricelow,
 				pricehigh: this.state.pricehigh,
 				beds: this.state.beds,
-				baths: this.state.baths,
-				userid: this.state.userid,
+				baths: this.state.baths
 			},
 		  state: {}
 		});
 	},
+  showNeighborhoodModal: function () {
+    window.showModal2();
+  },
 
 	render: function() {
 		var cost_selector = [];
@@ -72,11 +73,19 @@ var SearchForm = React.createClass({
 					<h1 className="search-header"> New York City Real Estate</h1>
 					<label className="label-location">Location</label>
 
-					<input className="location" onChange={this.updateLocation} type="text" placeholder="Neighborhood / Address / Building / Keyword" value={this.state.location}/>
+
+            <input  className="location"
+                    onClick={this.showNeighborhoodModal}
+                    onChange={this.updateLocation}
+                    type="text"
+                    placeholder="Neighborhood / Address / Building / Keyword"
+                    value={this.state.location}/>
+            <Neighborhoods />
+
 
 					<label className="label-type">Type</label>
 					<select className="type-select" onChange={this.updateCategory}>
-						<option value="{null}">Any Types</option>
+						<option value="any">Any Types</option>
 						<option value="condo">Condos</option>
 						<option value="coop">Co-ops</option>
 						<option value="house">Houses</option>
@@ -138,9 +147,6 @@ var SearchForm = React.createClass({
 	},
 	updateBaths: function(e) {
 		this.setState({ baths: e.currentTarget.value });
-	},
-	updateUserId: function(e) {
-		this.setState({ userid: e.currentTarget.value });
 	}
 
 });

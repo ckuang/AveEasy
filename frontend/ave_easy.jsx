@@ -13,11 +13,12 @@ var BrowserHistory = require('react-router').browserHistory;
 var SessionStore = require('./stores/session');
 var ApiUtil = require('./util/api_util');
 
-window.ApiUtil = ApiUtil;
-
 var App = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
+  },
+  goToHomePage: function () {
+    this.context.router.push('/');
   },
   render: function(){
     return (
@@ -25,10 +26,11 @@ var App = React.createClass({
         <LoginForm />
         <nav className="group">
           <p className="nyc">New York City</p>
+          <a className="nyc"href="http://ny.curbed.com/">   Blog</a>
           <HeaderNav/>
         </nav>
         <nav className="group logo">
-          <img src={window.logourl} />
+          <img onClick={this.goToHomePage} src={window.logourl} />
         </nav>
         <br/>
         {this.props.children}
@@ -58,6 +60,14 @@ window.showModal = function(){
 
 window.hideModal = function(){
 $("#modal").removeClass("is-active");
+};
+
+window.showModal2 = function(){
+  $("#modal2").addClass("is-active");
+};
+
+window.hideModal2 = function(){
+$("#modal2").removeClass("is-active");
 };
 
 document.addEventListener("DOMContentLoaded", function () {

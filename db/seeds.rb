@@ -42,8 +42,12 @@ while x < 100
 	x += 1
 end
 
-
-
 sennacy = User.create!(username: 'sennacy', password: 'starwars', realtor: true, realtor_company: 'App Academy')
 mr_monopoly = User.create!(username: 'monopoly', password: 'password', realtor: true, realtor_company: 'Hasbro')
 jordan = User.create!(username: "jordan", password: "rodriguez", realtor: true, realtor_company: "Compass")
+
+y = 1
+while y <= 10
+  SavedListing.create!(listing_id: y, user_id: 1)
+  y += 1
+end

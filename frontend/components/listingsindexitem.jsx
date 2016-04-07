@@ -35,7 +35,9 @@ var Listing = React.createClass({
       this.context.router.push('/listing/' + this.props.listing.id);
     }
   },
-
+  saveListing: function () {
+    ApiUtil.saveListing(this.props.listing.id);
+  },
   render: function () {
     return(
     <li onClick={this.showListing} onMouseEnter={this.place_marker} className="idx_listing group">
@@ -46,7 +48,7 @@ var Listing = React.createClass({
       <p className="idx_baths detail"> {this.props.listing.baths} bath</p>
       <p className="idx_category detail"> {this.props.listing.category} in {this.props.listing.neighborhood}</p>
       <p className="idx_company detail"> Listed by {this.props.listing.company}</p>
-      <button className="save_button" onClick={ApiUtil.saveListing(this.props.listing.id)}> Save </button>
+      <button className="save_button" onClick={this.saveListing}> Save </button>
   </li>);
  }
 });

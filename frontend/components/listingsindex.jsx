@@ -14,7 +14,8 @@ var Listings = React.createClass({
   },
   componentDidMount: function () {
     this.listingListener = ListingStore.addListener(this._listingChanged);
-		ApiUtil.fetchListings(this.props.location.query);
+    debugger
+    ApiUtil.fetchListings(this.props.location.query);
   },
   componentWillUnmount: function () {
     this.listingListener.remove();

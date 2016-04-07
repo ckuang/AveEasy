@@ -1,4 +1,4 @@
 json.extract!(
   listing,
-	:address, :beds, :baths, :price, :category, :user_id, :id, :lat, :lng, :neighborhood
+	:address, :beds, :baths, :price, :category, :id, :lat, :lng, :neighborhood
 )
