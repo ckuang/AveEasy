@@ -5,6 +5,7 @@ var Costs = [100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000, 800
 var Beds = [0, 1, 2, 3, 4];
 var Baths = [1, 1.5, 2, 2.5, 3, 3.5, 4];
 var Neighborhoods = require('./neighborhood_modal');
+var LocationStore = require('../stores/location');
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -23,6 +24,12 @@ var SearchForm = React.createClass({
 							baths: "any"
 						});
 	},
+  setLocation: function () {
+    this.setState({location: LocationStore.location()});
+  },
+  componentDidMount: function () {
+    this.locationListener = LocationStore.addListener(this.setLocation);
+  },
 	showListings: function () {
 		this.context.router.push({
 		  pathname: '/listings',
@@ -74,7 +81,8 @@ var SearchForm = React.createClass({
 					<label className="label-location">Location</label>
 
 
-            <input  className="location"
+            <input  id="searchformlocation"
+                    className="location"
                     onClick={this.showNeighborhoodModal}
                     onChange={this.updateLocation}
                     type="text"
@@ -132,6 +140,7 @@ var SearchForm = React.createClass({
 
 	updateLocation: function(e) {
 		this.setState({ location: e.currentTarget.value });
+    ApiUtil.pgSearchNeighborhoods(e.currentTarget.value);
 	},
 	updateCategory: function(e) {
 		this.setState({ category: e.currentTarget.value });

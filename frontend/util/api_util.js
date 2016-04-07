@@ -26,6 +26,17 @@ var ApiUtil = {
     });
   },
 
+  pgSearchNeighborhoods: function(string) {
+    $.ajax({
+      url: "/api/pgsearchneighborhoods",
+      dataType: "json",
+      data: {string: string},
+      success: function (neighborhoods) {
+        ApiActions.updateNeighborhoods(neighborhoods);
+      }
+    });
+  },
+
   fetchSavedListings: function (listings_params) {
 		$.ajax({
       url: " /api/savedlistings",

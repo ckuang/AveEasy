@@ -17,34 +17,20 @@ var Neighborhoods = React.createClass({
   componentWillUnmount: function () {
     this.neighborhoodlistener.remove();
   },
+  handleClick: function (e) {
+    ApiActions.updateSearchLocation(e.currentTarget.innerHTML);
+    window.hideModal2();
+    this.setState({neighborhoods: []});
+  },
 	render: function() {
     var neighborhoods = [];
     for (var x = 0; x < this.state.neighborhoods.length; x++) {
-      neighborhoods.push();
+      neighborhoods.push(<li onClick ={this.handleClick} key={x}>{this.state.neighborhoods[x]}</li>);
     }
     return (
       <section id="modal2" className="modal2 ">
       <ul className="modal2-content">
-        <li>Soho</li>
-        <li>Fidi</li>
-        <li>LES</li>
-        <li>East Village</li>
-        <li>West Village</li>
-        <li>Soho</li>
-        <li>Fidi</li>
-        <li>LES</li>
-        <li>East Village</li>
-        <li>West Village</li>
-        <li>Soho</li>
-        <li>Fidi</li>
-        <li>LES</li>
-        <li>East Village</li>
-        <li>West Village</li>
-        <li>Soho</li>
-        <li>Fidi</li>
-        <li>LES</li>
-        <li>East Village</li>
-        <li>West Village</li>
+        {neighborhoods}
       </ul>
       <div onClick={window.hideModal2} className="modal2-screen"></div>
       </section>

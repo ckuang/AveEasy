@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     resources :users, only: [:create]
     resources :saved_listings, only: [:create, :destroy]
     resources :listings, only: [:index, :show]
-    get 'savedlistings', to: 'listings#saved_index'
+    get 'pgsearchneighborhoods', to: 'listings#neighborhoods'
   end
 
   get '*path' => "static_pages#root"

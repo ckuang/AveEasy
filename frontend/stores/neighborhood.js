@@ -11,10 +11,8 @@ NeighborhoodStore.all = function () {
 
 NeighborhoodStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
-    case ListingConstants.LISTINGS_RECEIVED:
-      NeighborhoodStore.__emitChange();
-      break;
-    case ListingConstants.LISTING_RECEIVED:
+    case "updateneighborhoods":
+      _neighborhoods = payload.neighborhoods;
       NeighborhoodStore.__emitChange();
       break;
   }

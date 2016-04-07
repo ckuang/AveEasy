@@ -26,7 +26,22 @@ var ApiActions = {
 			actionType: "updateregister",
 			register: register,
 		});
-	}
+	},
+
+  updateSearchLocation: function (location) {
+    AppDispatcher.dispatch({
+      actionType: "updatesearchlocation",
+      location: location
+    });
+  },
+
+  updateNeighborhoods: function (neighborhoods) {
+    AppDispatcher.dispatch({
+      actionType: "updateneighborhoods",
+      neighborhoods: neighborhoods
+    });
+  }
+
 };
 
 module.exports = ApiActions;

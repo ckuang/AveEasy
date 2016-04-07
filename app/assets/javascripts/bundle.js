@@ -31704,6 +31704,17 @@
 	    });
 	  },
 	
+	  pgSearchNeighborhoods: function (string) {
+	    $.ajax({
+	      url: "/api/pgsearchneighborhoods",
+	      dataType: "json",
+	      data: { string: string },
+	      success: function (neighborhoods) {
+	        ApiActions.updateNeighborhoods(neighborhoods);
+	      }
+	    });
+	  },
+	
 	  fetchSavedListings: function (listings_params) {
 	    $.ajax({
 	      url: " /api/savedlistings",
@@ -31826,7 +31837,22 @@
 	      actionType: "updateregister",
 	      register: register
 	    });
+	  },
+	
+	  updateSearchLocation: function (location) {
+	    AppDispatcher.dispatch({
+	      actionType: "updatesearchlocation",
+	      location: location
+	    });
+	  },
+	
+	  updateNeighborhoods: function (neighborhoods) {
+	    AppDispatcher.dispatch({
+	      actionType: "updateneighborhoods",
+	      neighborhoods: neighborhoods
+	    });
 	  }
+	
 	};
 	
 	module.exports = ApiActions;
@@ -32448,7 +32474,8 @@
 	var Costs = [100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000];
 	var Beds = [0, 1, 2, 3, 4];
 	var Baths = [1, 1.5, 2, 2.5, 3, 3.5, 4];
-	var Neighborhoods = __webpack_require__(253);
+	var Neighborhoods = __webpack_require__(252);
+	var LocationStore = __webpack_require__(254);
 	
 	function numberWithCommas(x) {
 		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -32468,6 +32495,12 @@
 				beds: "any",
 				baths: "any"
 			};
+		},
+		setLocation: function () {
+			this.setState({ location: LocationStore.location() });
+		},
+		componentDidMount: function () {
+			this.locationListener = LocationStore.addListener(this.setLocation);
 		},
 		showListings: function () {
 			this.context.router.push({
@@ -32540,7 +32573,8 @@
 						{ className: 'label-location' },
 						'Location'
 					),
-					React.createElement('input', { className: 'location',
+					React.createElement('input', { id: 'searchformlocation',
+						className: 'location',
 						onClick: this.showNeighborhoodModal,
 						onChange: this.updateLocation,
 						type: 'text',
@@ -32655,6 +32689,7 @@
 	
 		updateLocation: function (e) {
 			this.setState({ location: e.currentTarget.value });
+			ApiUtil.pgSearchNeighborhoods(e.currentTarget.value);
 		},
 		updateCategory: function (e) {
 			this.setState({ category: e.currentTarget.value });
@@ -32677,14 +32712,13 @@
 	module.exports = SearchForm;
 
 /***/ },
-/* 252 */,
-/* 253 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
-	var NeighborhoodStore = __webpack_require__(254);
+	var NeighborhoodStore = __webpack_require__(253);
 	
 	var Neighborhoods = React.createClass({
 	  displayName: 'Neighborhoods',
@@ -32701,10 +32735,19 @@
 	  componentWillUnmount: function () {
 	    this.neighborhoodlistener.remove();
 	  },
+	  handleClick: function (e) {
+	    ApiActions.updateSearchLocation(e.currentTarget.innerHTML);
+	    window.hideModal2();
+	    this.setState({ neighborhoods: [] });
+	  },
 	  render: function () {
 	    var neighborhoods = [];
 	    for (var x = 0; x < this.state.neighborhoods.length; x++) {
-	      neighborhoods.push();
+	      neighborhoods.push(React.createElement(
+	        'li',
+	        { onClick: this.handleClick, key: x },
+	        this.state.neighborhoods[x]
+	      ));
 	    }
 	    return React.createElement(
 	      'section',
@@ -32712,106 +32755,7 @@
 	      React.createElement(
 	        'ul',
 	        { className: 'modal2-content' },
-	        React.createElement(
-	          'li',
-	          null,
-	          'Soho'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Fidi'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'LES'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'East Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'West Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Soho'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Fidi'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'LES'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'East Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'West Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Soho'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Fidi'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'LES'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'East Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'West Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Soho'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'Fidi'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'LES'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'East Village'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          'West Village'
-	        )
+	        neighborhoods
 	      ),
 	      React.createElement('div', { onClick: window.hideModal2, className: 'modal2-screen' })
 	    );
@@ -32822,7 +32766,7 @@
 	module.exports = Neighborhoods;
 
 /***/ },
-/* 254 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
@@ -32837,16 +32781,38 @@
 	
 	NeighborhoodStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case ListingConstants.LISTINGS_RECEIVED:
-	      NeighborhoodStore.__emitChange();
-	      break;
-	    case ListingConstants.LISTING_RECEIVED:
+	    case "updateneighborhoods":
+	      _neighborhoods = payload.neighborhoods;
 	      NeighborhoodStore.__emitChange();
 	      break;
 	  }
 	};
 	
 	module.exports = NeighborhoodStore;
+
+/***/ },
+/* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(218).Store;
+	var _location = "";
+	var AppDispatcher = __webpack_require__(237);
+	var LocationStore = new Store(AppDispatcher);
+	
+	LocationStore.location = function () {
+	  return _location;
+	};
+	
+	LocationStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "updatesearchlocation":
+	      _location = payload.location;
+	      LocationStore.__emitChange();
+	      break;
+	  }
+	};
+	
+	module.exports = LocationStore;
 
 /***/ }
 /******/ ]);

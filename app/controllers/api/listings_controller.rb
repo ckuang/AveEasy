@@ -5,6 +5,14 @@ class Api::ListingsController < ApplicationController
     render json: @listing
   end
 
+  def neighborhoods
+    string = params["string"]
+    trigram = Listing.trgm(string).pluck(:neighborhood)
+    tsearch = Listing.tsrch(string).pluck(:neighborhood)
+    @neighborhoods = (trigram + tsearch).uniq.sort
+    render json: @neighborhoods
+  end
+
   def index
     if user_id
       @listings = current_user.savedlistings
