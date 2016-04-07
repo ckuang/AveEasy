@@ -15,15 +15,18 @@ var HeaderNav = React.createClass({
     });
 	},
 	changeState: function () {
-		this.setState({
+    this.setState({
       loggedIn: SessionStore.isLoggedIn(),
       currentUser: SessionStore.currentUser(),
       usercheck: true
     });
 	},
 	componentDidMount: function () {
-		SessionStore.addListener(this.changeState);
+		this.sessionListener = SessionStore.addListener(this.changeState);
 	},
+  componentWillUnmount: function () {
+    this.sessionListener.remove();
+  },
 	register: function () {
 		ApiActions.updateRegister("Register");
 		window.showModal();
@@ -34,19 +37,15 @@ var HeaderNav = React.createClass({
 	},
 
   showSavedListings: function () {
+    var query = {
+      userid: "signedin"
+    };
     this.context.router.push({
 		  pathname: '/listings',
-      query: {
-        location: "",
-        category: "any",
-        pricelow: "any",
-        pricehigh: "any",
-        beds: "any",
-        baths: "any",
-        userid: "signedin"
-			},
+      query: query,
 		  state: {}
 		});
+    ApiUtil.fetchListings(query);
 	},
 
 	render: function () {

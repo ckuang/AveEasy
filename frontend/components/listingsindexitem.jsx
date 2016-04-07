@@ -1,5 +1,6 @@
 var React = require('react');
 var MarkerStore = require('../stores/marker');
+var SessionStore = require('../stores/session');
 var ReactRouter = require('react-router');
 var ApiUtil = require('../util/api_util');
 var ApiActions = require('../actions/api_action');
@@ -16,7 +17,7 @@ var Listing = React.createClass({
   },
 
   getInitialState: function () {
-    return {};
+    return {saved: false};
   },
 
   place_marker: function () {

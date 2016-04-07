@@ -1,8 +1,14 @@
 class Api::SessionsController < ApplicationController
 
+
+
   def show
     if signed_in?
       @current_user = current_user
+      @savedlistings = []
+      current_user.savedlistings.each do |saved|
+        @savedlistings.push(saved.id)
+      end
     else
       render json: {message: "Not logged in"}, status: 401
     end
@@ -16,6 +22,10 @@ class Api::SessionsController < ApplicationController
 
     if @current_user
       sign_in(@current_user)
+      @savedlistings = []
+      current_user.savedlistings.each do |saved|
+        @savedlistings.push(saved.id)
+      end
     else
       render json: { message: "Invalid credentials" }, status: 401
     end

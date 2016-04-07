@@ -39,7 +39,9 @@ var ApiUtil = {
 
   fetchSavedListings: function (listings_params) {
 		$.ajax({
-      url: " /api/savedlistings",
+      url: "/api/listings",
+			dataType: "json",
+			data: {listings: listings_params},
       success: function (listings) {
         ApiActions.receiveAll(listings);
       }

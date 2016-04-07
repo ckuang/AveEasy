@@ -5,6 +5,7 @@ var ApiUtil = require('../util/api_util');
 var Listing = require('./listingsindexitem');
 var GoogleMap = require('./map');
 
+
 var Listings = React.createClass({
   getInitialState: function () {
     return { listings: false };
@@ -14,7 +15,6 @@ var Listings = React.createClass({
   },
   componentDidMount: function () {
     this.listingListener = ListingStore.addListener(this._listingChanged);
-    debugger
     ApiUtil.fetchListings(this.props.location.query);
   },
   componentWillUnmount: function () {

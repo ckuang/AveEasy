@@ -24828,7 +24828,6 @@
 	  },
 	  componentDidMount: function () {
 	    this.listingListener = ListingStore.addListener(this._listingChanged);
-	    debugger;
 	    ApiUtil.fetchListings(this.props.location.query);
 	  },
 	  componentWillUnmount: function () {
@@ -31717,7 +31716,9 @@
 	
 	  fetchSavedListings: function (listings_params) {
 	    $.ajax({
-	      url: " /api/savedlistings",
+	      url: "/api/listings",
+	      dataType: "json",
+	      data: { listings: listings_params },
 	      success: function (listings) {
 	        ApiActions.receiveAll(listings);
 	      }
@@ -31892,6 +31893,7 @@
 
 	var React = __webpack_require__(1);
 	var MarkerStore = __webpack_require__(244);
+	var SessionStore = __webpack_require__(247);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(240);
 	var ApiActions = __webpack_require__(241);
@@ -31909,7 +31911,7 @@
 	  },
 	
 	  getInitialState: function () {
-	    return {};
+	    return { saved: false };
 	  },
 	
 	  place_marker: function () {
@@ -32101,7 +32103,10 @@
 	    });
 	  },
 	  componentDidMount: function () {
-	    SessionStore.addListener(this.changeState);
+	    this.sessionListener = SessionStore.addListener(this.changeState);
+	  },
+	  componentWillUnmount: function () {
+	    this.sessionListener.remove();
 	  },
 	  register: function () {
 	    ApiActions.updateRegister("Register");
@@ -32113,19 +32118,15 @@
 	  },
 	
 	  showSavedListings: function () {
+	    var query = {
+	      userid: "signedin"
+	    };
 	    this.context.router.push({
 	      pathname: '/listings',
-	      query: {
-	        location: "",
-	        category: "any",
-	        pricelow: "any",
-	        pricehigh: "any",
-	        beds: "any",
-	        baths: "any",
-	        userid: "signedin"
-	      },
+	      query: query,
 	      state: {}
 	    });
+	    ApiUtil.fetchListings(query);
 	  },
 	
 	  render: function () {
@@ -32501,6 +32502,10 @@
 		},
 		componentDidMount: function () {
 			this.locationListener = LocationStore.addListener(this.setLocation);
+			ApiUtil.pgSearchNeighborhoods("all");
+		},
+		componentWillUnmount: function () {
+			this.locationListener.remove();
 		},
 		showListings: function () {
 			this.context.router.push({

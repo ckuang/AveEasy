@@ -7,14 +7,25 @@ class Api::ListingsController < ApplicationController
 
   def neighborhoods
     string = params["string"]
-    trigram = Listing.trgm(string).pluck(:neighborhood)
-    tsearch = Listing.tsrch(string).pluck(:neighborhood)
-    @neighborhoods = (trigram + tsearch).uniq.sort
-    render json: @neighborhoods
+    if string == "all"
+      @neighborhoods = Listing.all.pluck(:neighborhood).uniq.sort
+      render json: @neighborhoods
+    else
+      trigram = Listing.trgm(string).pluck(:neighborhood)
+      tsearch = Listing.tsrch(string).pluck(:neighborhood)
+      @neighborhoods = (trigram + tsearch).uniq.sort
+      render json: @neighborhoods
+    end
   end
 
   def index
-    if user_id
+    if current_user
+      @savedlistings = current_user.savedlistings
+    else
+      @savedlistings = []
+    end
+
+    if listings_params["userid"] == "signedin"
       @listings = current_user.savedlistings
     else
       @listings =
@@ -59,9 +70,5 @@ class Api::ListingsController < ApplicationController
     type = listings_params["category"]
     return type == "any" ? "" : "category = '#{type}'"
 	end
-
-  def user_id
-    listings_params["userid"] == "signedin"
-  end
 
 end

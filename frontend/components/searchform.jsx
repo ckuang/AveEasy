@@ -29,6 +29,10 @@ var SearchForm = React.createClass({
   },
   componentDidMount: function () {
     this.locationListener = LocationStore.addListener(this.setLocation);
+    ApiUtil.pgSearchNeighborhoods("all");
+  },
+  componentWillUnmount: function () {
+    this.locationListener.remove();
   },
 	showListings: function () {
 		this.context.router.push({
