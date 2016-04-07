@@ -17,7 +17,7 @@ var Listing = React.createClass({
   },
 
   getInitialState: function () {
-    return {saved: false};
+    return {saved: this.props.listing.saved};
   },
 
   place_marker: function () {
@@ -32,14 +32,28 @@ var Listing = React.createClass({
 
   showListing: function (e) {
     e.preventDefault();
-    if (e.target.className !== "save_button") {
+    target = e.target.className;
+    if (target !== "save_button" && target !== "delete_button" ) {
       this.context.router.push('/listing/' + this.props.listing.id);
     }
   },
   saveListing: function () {
     ApiUtil.saveListing(this.props.listing.id);
+    this.setState({saved: !this.state.saved});
+  },
+  deleteListing: function () {
+    ApiUtil.deleteListing(this.props.listing.id);
+    this.setState({saved: !this.state.saved});
   },
   render: function () {
+    var button;
+    if (this.state.saved) {
+      button = <button className="delete_button" onClick={this.deleteListing}> Delete </button>;
+    } else {
+      button = <button className="save_button" onClick={this.saveListing}> Save </button>;
+    }
+
+
     return(
     <li onClick={this.showListing} onMouseEnter={this.place_marker} className="idx_listing group">
 			<img className="idx_image" src={this.props.listing.image}></img>
@@ -49,7 +63,7 @@ var Listing = React.createClass({
       <p className="idx_baths detail"> {this.props.listing.baths} bath</p>
       <p className="idx_category detail"> {this.props.listing.category} in {this.props.listing.neighborhood}</p>
       <p className="idx_company detail"> Listed by {this.props.listing.company}</p>
-      <button className="save_button" onClick={this.saveListing}> Save </button>
+      {button}
   </li>);
  }
 });

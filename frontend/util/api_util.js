@@ -20,7 +20,18 @@ var ApiUtil = {
       type: "POST",
       url: "/api/saved_listings",
       dataType: "json",
-      data: {save_listing: {listing_id: id}},
+      data: {listing: {listing_id: id}},
+      success: function () {
+      }
+    });
+  },
+
+  deleteListing: function(id) {
+    $.ajax({
+      type: "DELETE",
+      url: "/api/saved_listings/" + id,
+      dataType: "json",
+      data: {listing: {listing_id: id}},
       success: function () {
       }
     });

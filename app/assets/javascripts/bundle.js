@@ -31698,7 +31698,17 @@
 	      type: "POST",
 	      url: "/api/saved_listings",
 	      dataType: "json",
-	      data: { save_listing: { listing_id: id } },
+	      data: { listing: { listing_id: id } },
+	      success: function () {}
+	    });
+	  },
+	
+	  deleteListing: function (id) {
+	    $.ajax({
+	      type: "DELETE",
+	      url: "/api/saved_listings/" + id,
+	      dataType: "json",
+	      data: { listing: { listing_id: id } },
 	      success: function () {}
 	    });
 	  },
@@ -31911,7 +31921,7 @@
 	  },
 	
 	  getInitialState: function () {
-	    return { saved: false };
+	    return { saved: this.props.listing.saved };
 	  },
 	
 	  place_marker: function () {
@@ -31926,14 +31936,35 @@
 	
 	  showListing: function (e) {
 	    e.preventDefault();
-	    if (e.target.className !== "save_button") {
+	    target = e.target.className;
+	    if (target !== "save_button" && target !== "delete_button") {
 	      this.context.router.push('/listing/' + this.props.listing.id);
 	    }
 	  },
 	  saveListing: function () {
 	    ApiUtil.saveListing(this.props.listing.id);
+	    this.setState({ saved: !this.state.saved });
+	  },
+	  deleteListing: function () {
+	    ApiUtil.deleteListing(this.props.listing.id);
+	    this.setState({ saved: !this.state.saved });
 	  },
 	  render: function () {
+	    var button;
+	    if (this.state.saved) {
+	      button = React.createElement(
+	        'button',
+	        { className: 'delete_button', onClick: this.deleteListing },
+	        ' Delete '
+	      );
+	    } else {
+	      button = React.createElement(
+	        'button',
+	        { className: 'save_button', onClick: this.saveListing },
+	        ' Save '
+	      );
+	    }
+	
 	    return React.createElement(
 	      'li',
 	      { onClick: this.showListing, onMouseEnter: this.place_marker, className: 'idx_listing group' },
@@ -31979,11 +32010,7 @@
 	        ' Listed by ',
 	        this.props.listing.company
 	      ),
-	      React.createElement(
-	        'button',
-	        { className: 'save_button', onClick: this.saveListing },
-	        ' Save '
-	      )
+	      button
 	    );
 	  }
 	});
