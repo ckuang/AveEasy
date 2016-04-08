@@ -12,7 +12,7 @@ var LoginForm = React.createClass({
     return {
       name: "",
       password: "",
-      signin_register: ""
+      signin_register: "Sign In"
     };
   },
 
@@ -20,7 +20,7 @@ var LoginForm = React.createClass({
 		this.setState({
       name: "",
       password: "",
-      signin_register: ""
+      signin_register: "Sign In"
 		});
 	},
 
@@ -48,13 +48,14 @@ var LoginForm = React.createClass({
     return (
       <section id="modal" className="modal ">
         <article className="modal-content">
-          <span className="modal-close" onClick={this.hide}>CANCEL</span>
 
         <h1 id="signin"> {this.state.signin_register} </h1>
+    <span className="modal-close" onClick={this.hide}>CANCEL</span>
         <p> Register for free to access all AveEasy has to offer including premium data and advanced features. </p>
-        <ul className="group">
-          <li onClick={this.updateRegister} className="signintab">Register</li>
-          <li onClick={this.updateSignIn} className="signintab">Sign In</li>
+
+        <ul className="group modal-tabs-container">
+          <li className="register-tab" onClick={this.updateRegister} >Register</li>
+          <li className="signIn-tab" onClick={this.updateSignIn}>Sign In</li>
         </ul>
 
           <form onSubmit={this.handleSubmit}>
@@ -66,7 +67,7 @@ var LoginForm = React.createClass({
                     type="password"
                     placeholder="Password (At Least 5 Characters)"
                     value={this.state.password}/>
-            <button>{this.state.signin_register}</button>
+                <button class="submit-button">{this.state.signin_register}</button>
           </form>
 
         </article>

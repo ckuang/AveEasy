@@ -24812,6 +24812,7 @@
 
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
+	var SessionStore = __webpack_require__(247);
 	var ReactRouter = __webpack_require__(159);
 	var ApiUtil = __webpack_require__(240);
 	var Listing = __webpack_require__(243);
@@ -24821,20 +24822,27 @@
 	  displayName: 'Listings',
 	
 	  getInitialState: function () {
-	    return { listings: false };
+	    return { listings: false, signedIn: false };
 	  },
 	  _listingChanged: function () {
 	    this.setState({ listings: ListingStore.all() });
 	  },
+	  loginChanged: function () {
+	    this.setState({ signedIn: SessionStore.isLoggedIn() });
+	  },
 	  componentDidMount: function () {
 	    this.listingListener = ListingStore.addListener(this._listingChanged);
+	    this.sessionListener = SessionStore.addListener(this.loginChanged);
 	    ApiUtil.fetchListings(this.props.location.query);
+	    ApiUtil.fetchCurrentUser();
 	  },
 	  componentWillUnmount: function () {
 	    this.listingListener.remove();
+	    this.sessionListener.remove();
 	  },
 	
 	  render: function () {
+	    var loggedIn = this.state.signedIn;
 	    if (this.state.listings) {
 	      return React.createElement(
 	        'div',
@@ -24842,9 +24850,13 @@
 	        React.createElement(
 	          'ul',
 	          { className: 'idx_listings' },
-	          React.createElement(GoogleMap, null),
+	          React.createElement(
+	            'div',
+	            { id: 'map', className: 'group' },
+	            React.createElement(GoogleMap, null)
+	          ),
 	          this.state.listings.map(function (listing) {
-	            return React.createElement(Listing, { key: listing.id, listing: listing });
+	            return React.createElement(Listing, { key: listing.id, loggedIn: loggedIn, listing: listing });
 	          })
 	        ),
 	        this.props.children
@@ -31942,8 +31954,12 @@
 	    }
 	  },
 	  saveListing: function () {
-	    ApiUtil.saveListing(this.props.listing.id);
-	    this.setState({ saved: !this.state.saved });
+	    if (this.props.loggedIn) {
+	      ApiUtil.saveListing(this.props.listing.id);
+	      this.setState({ saved: !this.state.saved });
+	    } else {
+	      window.showModal();
+	    }
 	  },
 	  deleteListing: function () {
 	    ApiUtil.deleteListing(this.props.listing.id);
@@ -32164,12 +32180,12 @@
 	          null,
 	          React.createElement(
 	            'li',
-	            { onClick: this.showSavedListings },
+	            { 'class': 'properties-logout', onClick: this.showSavedListings },
 	            'My Properties'
 	          ),
 	          React.createElement(
 	            'li',
-	            { onClick: ApiUtil.logout },
+	            { 'class': 'properties-logout', onClick: ApiUtil.logout },
 	            'LogOut'
 	          )
 	        );
@@ -32353,7 +32369,7 @@
 	    return {
 	      name: "",
 	      password: "",
-	      signin_register: ""
+	      signin_register: "Sign In"
 	    };
 	  },
 	
@@ -32361,7 +32377,7 @@
 	    this.setState({
 	      name: "",
 	      password: "",
-	      signin_register: ""
+	      signin_register: "Sign In"
 	    });
 	  },
 	
@@ -32392,16 +32408,16 @@
 	        'article',
 	        { className: 'modal-content' },
 	        React.createElement(
-	          'span',
-	          { className: 'modal-close', onClick: this.hide },
-	          'CANCEL'
-	        ),
-	        React.createElement(
 	          'h1',
 	          { id: 'signin' },
 	          ' ',
 	          this.state.signin_register,
 	          ' '
+	        ),
+	        React.createElement(
+	          'span',
+	          { className: 'modal-close', onClick: this.hide },
+	          'CANCEL'
 	        ),
 	        React.createElement(
 	          'p',
@@ -32410,15 +32426,15 @@
 	        ),
 	        React.createElement(
 	          'ul',
-	          { className: 'group' },
+	          { className: 'group modal-tabs-container' },
 	          React.createElement(
 	            'li',
-	            { onClick: this.updateRegister, className: 'signintab' },
+	            { className: 'register-tab', onClick: this.updateRegister },
 	            'Register'
 	          ),
 	          React.createElement(
 	            'li',
-	            { onClick: this.updateSignIn, className: 'signintab' },
+	            { className: 'signIn-tab', onClick: this.updateSignIn },
 	            'Sign In'
 	          )
 	        ),
@@ -32435,7 +32451,7 @@
 	            value: this.state.password }),
 	          React.createElement(
 	            'button',
-	            null,
+	            { 'class': 'submit-button' },
 	            this.state.signin_register
 	          )
 	        )

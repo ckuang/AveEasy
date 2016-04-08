@@ -26,7 +26,7 @@ var App = React.createClass({
         <LoginForm />
         <nav className="group">
           <p className="nyc">New York City</p>
-          <a className="nyc"href="http://ny.curbed.com/">   Blog</a>
+          <a className="nyc" href="http://ny.curbed.com/">   Blog</a>
           <HeaderNav/>
         </nav>
         <nav className="group logo">

@@ -38,8 +38,12 @@ var Listing = React.createClass({
     }
   },
   saveListing: function () {
-    ApiUtil.saveListing(this.props.listing.id);
-    this.setState({saved: !this.state.saved});
+      if (this.props.loggedIn) {
+        ApiUtil.saveListing(this.props.listing.id);
+        this.setState({saved: !this.state.saved});
+      } else {
+        window.showModal();
+      }
   },
   deleteListing: function () {
     ApiUtil.deleteListing(this.props.listing.id);

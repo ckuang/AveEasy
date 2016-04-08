@@ -8,9 +8,11 @@ class Api::SavedListingsController < ApplicationController
   end
 
   def destroy
-    byebug
-    @delete_listing = SavedListing.find(params["listing"]["listing_id"].to_i)
-    @delete_listing.destroy!
+    listing_id = params["listing"]["listing_id"].to_i
+    @delete_listing = SavedListing
+      .where("listing_id = #{listing_id}")
+      .where("user_id = #{current_user.id}")
+    SavedListing.delete(@delete_listing.first.id)
     render json: {}
   end
 

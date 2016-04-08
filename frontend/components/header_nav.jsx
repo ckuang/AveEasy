@@ -53,8 +53,8 @@ var HeaderNav = React.createClass({
   		if (this.state.loggedIn) {
   			return (
   				<ul>
-  					<li onClick={this.showSavedListings}>My Properties</li>
-  					<li onClick={ApiUtil.logout}>LogOut</li>
+  					<li class="properties-logout" onClick={this.showSavedListings}>My Properties</li>
+  					<li class="properties-logout" onClick={ApiUtil.logout}>LogOut</li>
   				</ul>
   		);
   		} else {
