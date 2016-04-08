@@ -6,11 +6,11 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-a = File.open("app/assets/images/boardwalk_hotel.jpg")
-b = File.open("app/assets/images/boardwalk.jpg")
-c = File.open("app/assets/images/hotels.jpg")
-d = File.open("app/assets/images/houses.jpg")
-e = File.open("app/assets/images/pass_go.jpg")
+a = File.open("#{Rails.root}/app/assets/images/boardwalk_hotel.jpg")
+b = File.open("#{Rails.root}/app/assets/images/boardwalk.jpg")
+c = File.open("#{Rails.root}/app/assets/images/hotels.jpg")
+d = File.open("#{Rails.root}/app/assets/images/houses.jpg")
+e = File.open("#{Rails.root}/app/assets/images/pass_go.jpg")
 pics = [a, b, c, d, e]
 
 require 'csv'
