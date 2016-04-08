@@ -13,6 +13,13 @@ d = File.open("#{Rails.root}/app/assets/images/houses.jpg")
 e = File.open("#{Rails.root}/app/assets/images/pass_go.jpg")
 pics = [a, b, c, d, e]
 
+# a = "boardwalk_hotel.jpg"
+# b = "boardwalk.jpg"
+# c = "hotels.jpg"
+# d = "houses.jpg"
+# e = "pass_go.jpg"
+# pics = [a, b, c, d, e]
+
 require 'csv'
 
 csv_text = File.read("db/addresses.csv")
@@ -38,7 +45,8 @@ while x < 200
 	new_listing.save!
 	pic = Listing.find_by_address(address).pictures.new
 	pic.image = pics[rand(5)]
-	pic.save!
+  # pic.image.url = pics.sample
+  pic.save!
 	x += 1
 end
 
