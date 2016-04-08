@@ -59,15 +59,29 @@ nav {
   font-weight: bold;
 }
 
+.neighborhood-li {
+  display: block;
+  border-bottom: 1px solid lightgray;
+  padding: 5px 0;
+}
 
 .logo {
-  color: rgb(75, 125, 197);
   display: block;
-  font-size: 30px;
   font-weight: bold;
-  font-family: Source Sans Pro;
   width: 980px;
   border-bottom: 5px solid black;
+}
+
+.logo > p {
+  color: lightgray;
+  display: block;
+  float: right;
+  box-sizing: border-box;
+  width: 163px;
+  height: 32px;
+  border: 1px solid lightgray;
+  padding: 5px;
+  margin-top: 8px;
 }
 
 nav > img {
@@ -90,6 +104,7 @@ nav > img {
   border-top: 1px solid black;
   font-family: Source Sans Pro;
 }
+
 
 .save_button {
   position: absolute;
@@ -147,6 +162,16 @@ nav > img {
 
 }
 
+.show-container {
+  width: 980px;
+  margin: auto;
+}
+
+.listing-show {
+  width: 392px;
+  float: right;
+}
+
 .detail {
   box-sizing: border-box;
   width: 455px;
@@ -200,18 +225,14 @@ nav > img {
 .search > label {
 	font-size: 14px;
 	display: block;
+  padding-bottom: 5px;
 }
 
-.label-location {
-
-}
-.label-type {
-
-}
+.label-location {}
+.label-type {}
 .label-price {}
 .label-bed {}
 .label-bath {}
-
 
 
 .search > input {
@@ -260,4 +281,10 @@ nav > img {
 	height: 42px;
 	background: rgb(75, 125, 197);
 	color: white;
+}
+
+.show_image {
+  display: block;
+  float: left;
+  width: 500px;
 }

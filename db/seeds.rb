@@ -18,9 +18,9 @@ require 'csv'
 csv_text = File.read("db/addresses.csv")
 csv = CSV.parse(csv_text, :headers => true)
 x = 0
-while x < 100
-
-	coop = csv[x * 20].to_hash.values[1].split("\n")
+while x < 200
+  category = (x % 2 == 0) ? "coop" : "condo"
+	coop = csv[x * 10].to_hash.values[1].split("\n")
 	address = coop[0]
 	lat_lng = coop[2].delete("()").split(", ")
 	lat = lat_lng[0]
@@ -30,11 +30,11 @@ while x < 100
 		beds: rand(10),
 	  baths: rand(5),
 		price: (rand(40) * 25000) + 500000,
-		category: "coop",
+		category: category,
 	  user_id: 3,
 		lat: lat.to_f,
 	  lng: lng.to_f,
-		neighborhood: csv[x * 20].to_hash.values[2])
+		neighborhood: csv[x * 10].to_hash.values[2])
 	new_listing.save!
 	pic = Listing.find_by_address(address).pictures.new
 	pic.image = pics[rand(5)]

@@ -32,14 +32,18 @@ var ListingShow = React.createClass({
       return (<div></div>);
     } else {
     return(
-      <ul>
-        <li className="show_address detail"> {this.state.listing.address}</li>
-        <li className="show_price detail"> ${numberWithCommas(this.state.listing.price)} FOR SALE</li>
-        <li className="show_beds detail"> {this.state.listing.beds} beds</li>
-        <li className="show_baths detail"> {this.state.listing.baths} bath</li>
-        <li className="show_category detail"> {this.state.listing.category}</li>
+      <div className="show-container group">
+        <img className="show_image" src={this.state.listing.image}></img>
+      <ul className="listing-show group">
+        <li className="show_address detail"> {this.state.listing.listing.address}</li>
+        <li className="show_price detail"> ${numberWithCommas(this.state.listing.listing.price)} FOR SALE</li>
+        <li className="show_beds detail"> {this.state.listing.listing.beds} beds</li>
+        <li className="show_baths detail"> {this.state.listing.listing.baths} bath</li>
+        <li className="show_category detail">
+          {this.state.listing.listing.category} in {this.state.listing.listing.neighborhood}</li>
         <li className="show_company detail"> Listed by {this.state.listing.company}</li>
       </ul>
+    </div>
     );
     }
   }

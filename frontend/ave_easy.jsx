@@ -20,6 +20,9 @@ var App = React.createClass({
   goToHomePage: function () {
     this.context.router.push('/');
   },
+  search: function () {
+    alert("lol not implemented yet");
+  },
   render: function(){
     return (
       <div>
@@ -31,6 +34,7 @@ var App = React.createClass({
         </nav>
         <nav className="group logo">
           <img onClick={this.goToHomePage} src={window.logourl} />
+          <p onClick={this.search}> Search </p>
         </nav>
         <br/>
         {this.props.children}
@@ -38,6 +42,8 @@ var App = React.createClass({
     );
   }
 });
+
+
 
 var requireAuth = function (nextState, replace, asyncCompletionCallback) {
     if (!SessionStore.currentUserHasBeenFetched()) {

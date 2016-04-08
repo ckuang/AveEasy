@@ -25,7 +25,7 @@ var Neighborhoods = React.createClass({
 	render: function() {
     var neighborhoods = [];
     for (var x = 0; x < this.state.neighborhoods.length; x++) {
-      neighborhoods.push(<li onClick ={this.handleClick} key={x}>{this.state.neighborhoods[x]}</li>);
+      neighborhoods.push(<li className="neighborhood-li"onClick ={this.handleClick} key={x}>{this.state.neighborhoods[x]}</li>);
     }
     return (
       <section id="modal2" className="modal2 ">

@@ -2,6 +2,9 @@ class Listing < ActiveRecord::Base
   include PgSearch
   pg_search_scope :trgm, :against => :neighborhood, :using => {:trigram =>  {:threshold => 0.1}}
   pg_search_scope :tsrch, :against => :neighborhood, :using => {:tsearch => {:prefix => true}}
+  pg_search_scope :location, :against => [:address, :neighborhood], :using => {:tsearch => {:prefix => true}, :trigram =>  {:threshold => 0.3}}
+
+
   validates :address, :beds, :baths, :price, :neighborhood, :category, :user_id, :lat, :lng, presence: true
   belongs_to :user
 	has_many :pictures, as: :imageable

@@ -49,9 +49,12 @@ var LoginForm = React.createClass({
       <section id="modal" className="modal ">
         <article className="modal-content">
 
-        <h1 id="signin"> {this.state.signin_register} </h1>
-    <span className="modal-close" onClick={this.hide}>CANCEL</span>
-        <p> Register for free to access all AveEasy has to offer including premium data and advanced features. </p>
+        <div className="login-nav">
+        <span onClick={this.hide}>Cancel</span>
+        <h1> {this.state.signin_register} </h1>
+        </div>
+
+        <p className="login-info"> Register for free to access all AveEasy has to offer including premium data and advanced features. </p>
 
         <ul className="group modal-tabs-container">
           <li className="register-tab" onClick={this.updateRegister} >Register</li>
@@ -59,15 +62,18 @@ var LoginForm = React.createClass({
         </ul>
 
           <form onSubmit={this.handleSubmit}>
-            <input  onChange={this.updateName}
+            <input  className="login-input"
+                    onChange={this.updateName}
                     type="text"
                     placeholder="Email Address"
                     value={this.state.name}/>
-            <input  onChange={this.updatePassword}
+                  <br/>
+            <input  className="login-input"
+                    onChange={this.updatePassword}
                     type="password"
                     placeholder="Password (At Least 5 Characters)"
                     value={this.state.password}/>
-                <button class="submit-button">{this.state.signin_register}</button>
+            <button className="submit-button">{this.state.signin_register}</button>
           </form>
 
         </article>

@@ -51,13 +51,13 @@
 	var Route = ReactRouter.Route;
 	var IndexRoute = ReactRouter.IndexRoute;
 	var Listings = __webpack_require__(216);
-	var HeaderNav = __webpack_require__(246);
+	var HeaderNav = __webpack_require__(247);
 	var ListingShow = __webpack_require__(248);
 	var LoginForm = __webpack_require__(249);
 	var SearchForm = __webpack_require__(251);
 	var BrowserHistory = __webpack_require__(159).browserHistory;
-	var SessionStore = __webpack_require__(247);
-	var ApiUtil = __webpack_require__(240);
+	var SessionStore = __webpack_require__(240);
+	var ApiUtil = __webpack_require__(241);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -67,6 +67,9 @@
 	  },
 	  goToHomePage: function () {
 	    this.context.router.push('/');
+	  },
+	  search: function () {
+	    alert("lol not implemented yet");
 	  },
 	  render: function () {
 	    return React.createElement(
@@ -91,7 +94,12 @@
 	      React.createElement(
 	        'nav',
 	        { className: 'group logo' },
-	        React.createElement('img', { onClick: this.goToHomePage, src: window.logourl })
+	        React.createElement('img', { onClick: this.goToHomePage, src: window.logourl }),
+	        React.createElement(
+	          'p',
+	          { onClick: this.search },
+	          ' Search '
+	        )
 	      ),
 	      React.createElement('br', null),
 	      this.props.children
@@ -24812,11 +24820,11 @@
 
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
-	var SessionStore = __webpack_require__(247);
+	var SessionStore = __webpack_require__(240);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(240);
-	var Listing = __webpack_require__(243);
-	var GoogleMap = __webpack_require__(245);
+	var ApiUtil = __webpack_require__(241);
+	var Listing = __webpack_require__(244);
+	var GoogleMap = __webpack_require__(246);
 	
 	var Listings = React.createClass({
 	  displayName: 'Listings',
@@ -31688,8 +31696,56 @@
 /* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ApiActions = __webpack_require__(241);
-	var SessionActions = __webpack_require__(242);
+	var Store = __webpack_require__(218).Store;
+	var AppDispatcher = __webpack_require__(237);
+	var SessionStore = new Store(AppDispatcher);
+	
+	var _currentUser;
+	var _currentUserHasBeenFetched = false;
+	var _checkedForUser = false;
+	
+	SessionStore.currentUser = function () {
+	  return _currentUser;
+	};
+	
+	SessionStore.isLoggedIn = function () {
+	  return !!_currentUser;
+	};
+	
+	SessionStore.currentUserHasBeenFetched = function () {
+	  return _currentUserHasBeenFetched;
+	};
+	
+	SessionStore.checkedForUser = function () {
+	  return _checkedForUser;
+	};
+	
+	SessionStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "current_user_received":
+	      _currentUser = payload.currentUser;
+	      _currentUserHasBeenFetched = true;
+	      SessionStore.__emitChange();
+	      break;
+	    case "checkedForUser":
+	      _checkedForUser = true;
+	      SessionStore.__emitChange();
+	      break;
+	    case "logout":
+	      _currentUser = null;
+	      SessionStore.__emitChange();
+	      break;
+	  }
+	};
+	
+	module.exports = SessionStore;
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiActions = __webpack_require__(242);
+	var SessionActions = __webpack_require__(243);
 	var streeteasykey = "867a8b6ea743f335d75b71f9f64a63f8a56c6966";
 	
 	var ApiUtil = {
@@ -31829,7 +31885,7 @@
 	module.exports = ApiUtil;
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(237);
@@ -31881,7 +31937,7 @@
 	module.exports = ApiActions;
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(237);
@@ -31910,15 +31966,15 @@
 	module.exports = SessionActions;
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(244);
-	var SessionStore = __webpack_require__(247);
+	var MarkerStore = __webpack_require__(245);
+	var SessionStore = __webpack_require__(240);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(240);
-	var ApiActions = __webpack_require__(241);
+	var ApiUtil = __webpack_require__(241);
+	var ApiActions = __webpack_require__(242);
 	var hashHistory = ReactRouter.hashHistory;
 	
 	function numberWithCommas(x) {
@@ -32034,7 +32090,7 @@
 	module.exports = Listing;
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(218).Store;
@@ -32064,12 +32120,12 @@
 	module.exports = MarkerStore;
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var MarkerStore = __webpack_require__(244);
-	var ApiUtil = __webpack_require__(240);
+	var MarkerStore = __webpack_require__(245);
+	var ApiUtil = __webpack_require__(241);
 	
 	var Map = React.createClass({
 		displayName: 'Map',
@@ -32117,13 +32173,13 @@
 	module.exports = Map;
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var SessionStore = __webpack_require__(247);
-	var ApiActions = __webpack_require__(241);
-	var ApiUtil = __webpack_require__(240);
+	var SessionStore = __webpack_require__(240);
+	var ApiActions = __webpack_require__(242);
+	var ApiUtil = __webpack_require__(241);
 	
 	var HeaderNav = React.createClass({
 	  displayName: 'HeaderNav',
@@ -32177,15 +32233,15 @@
 	      if (this.state.loggedIn) {
 	        return React.createElement(
 	          'ul',
-	          null,
+	          { className: 'properties-logout' },
 	          React.createElement(
 	            'li',
-	            { 'class': 'properties-logout', onClick: this.showSavedListings },
+	            { onClick: this.showSavedListings },
 	            'My Properties'
 	          ),
 	          React.createElement(
 	            'li',
-	            { 'class': 'properties-logout', onClick: ApiUtil.logout },
+	            { onClick: ApiUtil.logout },
 	            'LogOut'
 	          )
 	        );
@@ -32214,63 +32270,15 @@
 	module.exports = HeaderNav;
 
 /***/ },
-/* 247 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(218).Store;
-	var AppDispatcher = __webpack_require__(237);
-	var SessionStore = new Store(AppDispatcher);
-	
-	var _currentUser;
-	var _currentUserHasBeenFetched = false;
-	var _checkedForUser = false;
-	
-	SessionStore.currentUser = function () {
-	  return _currentUser;
-	};
-	
-	SessionStore.isLoggedIn = function () {
-	  return !!_currentUser;
-	};
-	
-	SessionStore.currentUserHasBeenFetched = function () {
-	  return _currentUserHasBeenFetched;
-	};
-	
-	SessionStore.checkedForUser = function () {
-	  return _checkedForUser;
-	};
-	
-	SessionStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case "current_user_received":
-	      _currentUser = payload.currentUser;
-	      _currentUserHasBeenFetched = true;
-	      SessionStore.__emitChange();
-	      break;
-	    case "checkedForUser":
-	      _checkedForUser = true;
-	      SessionStore.__emitChange();
-	      break;
-	    case "logout":
-	      _currentUser = null;
-	      SessionStore.__emitChange();
-	      break;
-	  }
-	};
-	
-	module.exports = SessionStore;
-
-/***/ },
 /* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var ListingStore = __webpack_require__(217);
 	var ReactRouter = __webpack_require__(159);
-	var ApiUtil = __webpack_require__(240);
-	var Listing = __webpack_require__(243);
-	var GoogleMap = __webpack_require__(245);
+	var ApiUtil = __webpack_require__(241);
+	var Listing = __webpack_require__(244);
+	var GoogleMap = __webpack_require__(246);
 	var ListingStore = __webpack_require__(217);
 	var BrowserHistory = __webpack_require__(159).browserHistory;
 	function numberWithCommas(x) {
@@ -32301,46 +32309,52 @@
 	      return React.createElement('div', null);
 	    } else {
 	      return React.createElement(
-	        'ul',
-	        null,
+	        'div',
+	        { className: 'show-container group' },
+	        React.createElement('img', { className: 'show_image', src: this.state.listing.image }),
 	        React.createElement(
-	          'li',
-	          { className: 'show_address detail' },
-	          ' ',
-	          this.state.listing.address
-	        ),
-	        React.createElement(
-	          'li',
-	          { className: 'show_price detail' },
-	          ' $',
-	          numberWithCommas(this.state.listing.price),
-	          ' FOR SALE'
-	        ),
-	        React.createElement(
-	          'li',
-	          { className: 'show_beds detail' },
-	          ' ',
-	          this.state.listing.beds,
-	          ' beds'
-	        ),
-	        React.createElement(
-	          'li',
-	          { className: 'show_baths detail' },
-	          ' ',
-	          this.state.listing.baths,
-	          ' bath'
-	        ),
-	        React.createElement(
-	          'li',
-	          { className: 'show_category detail' },
-	          ' ',
-	          this.state.listing.category
-	        ),
-	        React.createElement(
-	          'li',
-	          { className: 'show_company detail' },
-	          ' Listed by ',
-	          this.state.listing.company
+	          'ul',
+	          { className: 'listing-show group' },
+	          React.createElement(
+	            'li',
+	            { className: 'show_address detail' },
+	            ' ',
+	            this.state.listing.listing.address
+	          ),
+	          React.createElement(
+	            'li',
+	            { className: 'show_price detail' },
+	            ' $',
+	            numberWithCommas(this.state.listing.listing.price),
+	            ' FOR SALE'
+	          ),
+	          React.createElement(
+	            'li',
+	            { className: 'show_beds detail' },
+	            ' ',
+	            this.state.listing.listing.beds,
+	            ' beds'
+	          ),
+	          React.createElement(
+	            'li',
+	            { className: 'show_baths detail' },
+	            ' ',
+	            this.state.listing.listing.baths,
+	            ' bath'
+	          ),
+	          React.createElement(
+	            'li',
+	            { className: 'show_category detail' },
+	            this.state.listing.listing.category,
+	            ' in ',
+	            this.state.listing.listing.neighborhood
+	          ),
+	          React.createElement(
+	            'li',
+	            { className: 'show_company detail' },
+	            ' Listed by ',
+	            this.state.listing.company
+	          )
 	        )
 	      );
 	    }
@@ -32354,8 +32368,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ApiUtil = __webpack_require__(240);
-	var ApiActions = __webpack_require__(241);
+	var ApiUtil = __webpack_require__(241);
+	var ApiActions = __webpack_require__(242);
 	var RegisterStore = __webpack_require__(250);
 	
 	var LoginForm = React.createClass({
@@ -32408,20 +32422,24 @@
 	        'article',
 	        { className: 'modal-content' },
 	        React.createElement(
-	          'h1',
-	          { id: 'signin' },
-	          ' ',
-	          this.state.signin_register,
-	          ' '
-	        ),
-	        React.createElement(
-	          'span',
-	          { className: 'modal-close', onClick: this.hide },
-	          'CANCEL'
+	          'div',
+	          { className: 'login-nav' },
+	          React.createElement(
+	            'span',
+	            { onClick: this.hide },
+	            'Cancel'
+	          ),
+	          React.createElement(
+	            'h1',
+	            null,
+	            ' ',
+	            this.state.signin_register,
+	            ' '
+	          )
 	        ),
 	        React.createElement(
 	          'p',
-	          null,
+	          { className: 'login-info' },
 	          ' Register for free to access all AveEasy has to offer including premium data and advanced features. '
 	        ),
 	        React.createElement(
@@ -32441,17 +32459,20 @@
 	        React.createElement(
 	          'form',
 	          { onSubmit: this.handleSubmit },
-	          React.createElement('input', { onChange: this.updateName,
+	          React.createElement('input', { className: 'login-input',
+	            onChange: this.updateName,
 	            type: 'text',
 	            placeholder: 'Email Address',
 	            value: this.state.name }),
-	          React.createElement('input', { onChange: this.updatePassword,
+	          React.createElement('br', null),
+	          React.createElement('input', { className: 'login-input',
+	            onChange: this.updatePassword,
 	            type: 'password',
 	            placeholder: 'Password (At Least 5 Characters)',
 	            value: this.state.password }),
 	          React.createElement(
 	            'button',
-	            { 'class': 'submit-button' },
+	            { className: 'submit-button' },
 	            this.state.signin_register
 	          )
 	        )
@@ -32513,8 +32534,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ApiUtil = __webpack_require__(240);
-	var ApiActions = __webpack_require__(241);
+	var ApiUtil = __webpack_require__(241);
+	var ApiActions = __webpack_require__(242);
 	var Costs = [100000, 150000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000];
 	var Beds = [0, 1, 2, 3, 4];
 	var Baths = [1, 1.5, 2, 2.5, 3, 3.5, 4];
@@ -32764,8 +32785,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ApiUtil = __webpack_require__(240);
-	var ApiActions = __webpack_require__(241);
+	var ApiUtil = __webpack_require__(241);
+	var ApiActions = __webpack_require__(242);
 	var NeighborhoodStore = __webpack_require__(253);
 	
 	var Neighborhoods = React.createClass({
@@ -32793,7 +32814,7 @@
 	    for (var x = 0; x < this.state.neighborhoods.length; x++) {
 	      neighborhoods.push(React.createElement(
 	        'li',
-	        { onClick: this.handleClick, key: x },
+	        { className: 'neighborhood-li', onClick: this.handleClick, key: x },
 	        this.state.neighborhoods[x]
 	      ));
 	    }

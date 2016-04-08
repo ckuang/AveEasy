@@ -2,7 +2,6 @@ class Api::ListingsController < ApplicationController
 
   def show
     @listing = Listing.find(params["id"])
-    render json: @listing
   end
 
   def neighborhoods
@@ -28,8 +27,9 @@ class Api::ListingsController < ApplicationController
     if listings_params["userid"] == "signedin"
       @listings = current_user.savedlistings
     else
+      x = address == "any" ? Listing.where("") : Listing.location(address)
       @listings =
-        Listing.where(beds)
+        x.where(beds)
         .where(baths)
         .where(category)
         .where(pricelow)
@@ -44,7 +44,8 @@ class Api::ListingsController < ApplicationController
 	end
 
 	def address
-	end
+    listings_params["location"]
+  end
 
 	def beds
     bed = listings_params["beds"]
